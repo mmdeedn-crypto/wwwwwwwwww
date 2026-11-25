@@ -153,7 +153,7 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
   <button id="nSet">⚙️ إعدادات التحليل</button>
   <button id="nLog">📄 السجل والتقارير</button>
   <button id="nAbout">ℹ️ حول المنصة</button>
-  <div class="priv">🔒 المعالجة تتم داخل متصفحك. لا يُرفع أي فيديو إلى أي خدمة خارجية.</div>
+  <div class="priv">🔐 عند تفعيل الكشف تُرسل لقطات من الفيديو إلى Roboflow لتحليلها.</div>
 </nav>
 
 <main>
@@ -166,7 +166,7 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
     <div class="stage" id="stage">
       <video id="v" playsinline preload="auto"></video>
       <canvas id="c"></canvas>
-      <div id="msg" hidden></div>
+      <div id="analysisNotice" class="analysis-notice">أدخل مفتاح Roboflow من الإعدادات لتفعيل كشف الشقوق.</div>
     </div>
     <div class="ctl">
       <button class="btn blue" id="bPlay">▶ تشغيل</button>
@@ -176,17 +176,19 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
       <select id="spd" aria-label="سرعة التشغيل"><option value=".5">0.5x</option><option value="1" selected>1.0x</option><option value="1.5">1.5x</option><option value="2">2x</option></select>
       <label class="muted"><input type="checkbox" id="tTrail" checked> المسارات</label><label class="muted"><input type="checkbox" id="tHeat"> خريطة الحرارة</label>
     </div>
-    <div class="muted" style="padding:6px 12px;background:var(--navy);border-top:1px solid var(--line);font-size:12px">🟩 لون قريب من بقية الصواني · 🟥 انحراف لوني يحتاج فحص · ⬜ مقارنة غير كافية. هذا فحص لوني تقريبي وليس كشفاً مؤكداً للكسر.</div>
+    <div class="muted" style="padding:8px 12px;background:var(--navy);border-top:1px solid var(--line);font-size:12px">🔴 شق محتمل = رصد بواسطة نموذج كشف الشقوق. عدم ظهور مربع لا يعني أن البيضة سليمة.</div>
   </section>
   </div>
   <section class="panel egg-reference" id="eggReference">
-    <div class="lh"><h2>مكتبة الصور المرجعية — فحص قشرة البيض</h2><span class="muted">أمثلة بحثية</span></div>
-    <p class="muted" style="padding:10px 14px">هذه الصور للمراجعة البصرية فقط، وليست نموذج ذكاء اصطناعي مدرّباً. لا تصدر المنصة حكماً على البيض اعتماداً على هذه الصور المرجعية.</p>
+    <div class="lh"><h2>مكتبة صور البيض المرجعية</h2><span class="muted">أمثلة من مجموعات عامة</span></div>
+    <p class="muted" style="padding:10px 14px;line-height:1.8">هذه أمثلة بصرية فقط وليست نتائج تحليل الفيديو.</p>
     <div class="egg-ref-grid">
-      <figure><img loading="lazy" src="https://media.springernature.com/lw1200/springer-static/image/art%3A10.1007%2Fs44187-025-00604-2/MediaObjects/44187_2025_604_Fig13_HTML.png" alt="أمثلة بحثية لقشرة بيض سليمة ومتشققة ومراحل تحليل الشقوق"><figcaption><b>أمثلة سليمة ومتشققة</b><small>شكل بحثي يوضح البيض دون شقوق، والشقوق المفردة والمتعددة والثقوب.</small></figcaption></figure>
-      <figure><img loading="lazy" src="https://source.roboflow.com/2RATb7xNNiZH3K6TPqR4AYly2tA2/06HRcKzi2M0r5DJLC1vL/original.jpg" alt="بيضة بنية عليها شق واضح"><figcaption><b>مثال بيضة متشققة</b><small>صورة من مجموعة Egg Crack Detection.</small></figcaption></figure>
+      <figure><img loading="lazy" src="https://source.roboflow.com/ERhe544iqbYefsM7CufGPJmvrBK2/01UePy9lygH67gHWhF93/thumb.jpg" alt="صورة مرجعية لقشرة بيضة"><figcaption><b>عينة من مجموعة كشف الشقوق 1</b><small>Roboflow Universe.</small></figcaption></figure>
+      <figure><img loading="lazy" src="https://source.roboflow.com/ERhe544iqbYefsM7CufGPJmvrBK2/080aWAZwxRGMwWIVH1Rn/thumb.jpg" alt="صورة مرجعية لبيضة"><figcaption><b>عينة من مجموعة كشف الشقوق 2</b><small>Roboflow Universe.</small></figcaption></figure>
+      <figure><img loading="lazy" src="https://source.roboflow.com/MEzJHD91FyHeLvS0wVlr/05ZK8BXvkh1cnjK9qtrh/thumb.jpg" alt="صورة مرجعية لقشرة بيضة متضررة"><figcaption><b>عينة مرجعية 3</b><small>Roboflow Universe.</small></figcaption></figure>
+      <figure><img loading="lazy" src="https://source.roboflow.com/MEzJHD91FyHeLvS0wVlr/09dsYxVkBxilOG5LW73H/thumb.jpg" alt="صورة مرجعية لقشرة بيضة"><figcaption><b>عينة مرجعية 4</b><small>Roboflow Universe.</small></figcaption></figure>
     </div>
-    <div class="muted" style="padding:8px 14px;font-size:11px">المصادر: <a href="https://link.springer.com/article/10.1007/s44187-025-00604-2" target="_blank" rel="noopener">بحث Springer Nature (2025)</a> · <a href="https://universe.roboflow.com/lakshmi-kaviti-xyhms/egg-crack-detection-k65q0" target="_blank" rel="noopener">مجموعة صور Roboflow</a></div>
+    <div class="muted" style="padding:8px 14px;font-size:11px">المصادر: <a href="https://universe.roboflow.com/360digitmg-swnfx/egg-crack-detection-yjhsy" target="_blank" rel="noopener">مجموعة 360digitmg — 978 صورة بأربع فئات</a> · <a href="https://universe.roboflow.com/innodatatics-yyp09/egg-crack-detection-eu65a" target="_blank" rel="noopener">نموذج Innodatatics لكشف الشقوق</a></div>
   </section>
   <section class="panel"><div class="lh" style="flex-wrap:wrap;gap:6px"><h2>المخطط الزمني للعناصر</h2><span class="muted">اضغط للانتقال · <b style="color:#ff2d4d">أشخاص</b> <b style="color:#22d3ee">مركبات</b> <b style="color:#34d399">حيوانات</b> <b style="color:#fbbf24">أخرى</b></span></div><canvas id="tl" style="width:100%;height:120px;display:block;cursor:pointer;border-radius:8px"></canvas></section>
 </main>
@@ -194,10 +196,10 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
 <aside style="display:flex;flex-direction:column;gap:14px;min-width:0">
   <section class="panel"><h2>نتائج التحليل</h2>
     <div class="chips">
-      <div class="chip"><b id="cT" style="color:var(--amber)">0</b><i>عناصر كلياً</i></div>
-      <div class="chip"><b id="cP" style="color:var(--red)">0</b><i>عمال</i></div>
-      <div class="chip"><b id="cV" style="color:#22c55e">0</b><i>لون قريب من المتوسط</i></div>
-      <div class="chip"><b id="cA" style="color:#ff2d4d">0</b><i>انحراف لوني</i></div>
+      <div class="chip"><b id="cT" style="color:var(--amber)">0</b><i>حالات رصد الشقوق</i></div>
+      <div class="chip"><b id="cP" style="color:var(--red)">0</b><i>بيض بني مشتبه</i></div>
+      <div class="chip"><b id="cV" style="color:#22c55e">0</b><i>بيض أبيض مشتبه</i></div>
+      <div class="chip"><b id="cA" style="color:var(--cyan)">0</b><i>رصد حالي</i></div>
     </div>
     <div class="donutwrap"><div class="donut" id="dn"><div id="dnT">—</div></div>
       <div class="leg" id="leg"></div></div>
@@ -216,7 +218,7 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
   <div class="panel"><small>مدة الفيديو</small><strong id="sDur">00:00:00</strong></div>
   <div class="panel"><small>إجمالي الكائنات (ظهورات مؤكدة)</small><strong id="sTot">0</strong></div>
   <div class="panel"><small>حالة التحليل</small><strong id="sSt" class="st-wait">جارٍ تحميل النموذج…</strong><button class="btn" id="bRetry" hidden style="margin-top:6px">إعادة المحاولة</button></div>
-  <div class="panel"><small>محرك الذكاء الاصطناعي</small><strong style="color:var(--cyan);font-size:20px">COCO-SSD · TensorFlow.js</strong></div>
+  <div class="panel"><small>محرك الذكاء الاصطناعي</small><strong style="color:var(--cyan);font-size:18px">Roboflow · Egg Crack Model</strong></div>
 </div>
 </div>
 
@@ -285,265 +287,94 @@ body[data-theme$="-light"] .theme-option{background:var(--bg);color:var(--tx);bo
 body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-theme$="-light"] .priv,body[data-theme$="-light"] .dev,body[data-theme$="-light"] .bar small{color:var(--tx)}
 
 
+.analysis-notice{position:absolute;left:12px;right:12px;bottom:12px;z-index:4;max-width:460px;margin:auto;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#071a2ddd;color:#fff;text-align:center;font-size:12px;pointer-events:none;backdrop-filter:blur(6px)}
 </style>
 
 <dialog id="dSet"><h2>إعدادات التحليل</h2>
   <label>حد الثقة الأدنى: <b id="thV">50%</b></label><input type="range" id="thr" min="30" max="90" value="50">
   <label>الفاصل بين الفحوصات</label><select id="itv"><option value="4000">كل 4 ثوانٍ</option><option value="6000" selected>كل 6 ثوانٍ (أخف على الفيديو)</option><option value="10000">كل 10 ثوانٍ</option></select>
-  <p class="muted" style="margin-top:10px">تُطبَّق التغييرات فوراً على الفحوصات القادمة.</p>
-  <button class="btn blue" style="margin-top:14px" onclick="this.closest('dialog').close()">تم</button></dialog>
+  <label>مفتاح Roboflow API</label><input id="rfKey" type="password" autocomplete="off" placeholder="ألصق المفتاح هنا" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--navy2);color:var(--tx)">
+  <p class="muted" style="margin-top:8px;line-height:1.8">المفتاح يُحفظ على هذا الجهاز فقط. عند تفعيل التحليل تُرسل لقطات من الفيديو إلى Roboflow لفحص الشقوق. النموذج يرصد الشقوق المحتملة فقط ولا يثبت سلامة البيض.</p>
+  <button class="btn blue" id="saveKey" style="margin-top:10px">حفظ وتفعيل الكشف</button>
+  <button class="btn" style="margin-top:10px" onclick="this.closest('dialog').close()">إغلاق</button></dialog>
 <dialog id="dAbout"><h2>ALEX GUARD AI</h2>
   <p style="line-height:1.9;margin-top:8px">منصة لتحليل الفيديو فقط. يكتشف النموذج الأشخاص والمركبات والحيوانات والأشياء التي يدعمها COCO-SSD، ويتتبعها بين الإطارات، ويسجّل ظهورها واختفاءها حسب توقيت الفيديو.</p>
-  <p class="muted" style="margin-top:8px">التتبع تقريبي (مطابقة المربعات بين الإطارات) وقد يعدّ العنصر ظهوراً جديداً إذا غاب أكثر من ثانية ونصف. صواني البيض تُقارن لونياً بوسيط ألوان الصواني في الإطار؛ الانحراف في أي اتجاه يظهر بالأحمر، واللون القريب من الوسيط بالأخضر، وتظهر المقارنة غير الكافية بالرمادي. هذا ليس كشف كسر مؤكداً؛ وكشف العمال يتم بنموذج COCO-SSD. لا يوجد كشف لعيوب البيض أو الصواني. المطوّر: Ali Al-Mamoori</p>
+  <p class="muted" style="margin-top:8px">تعتمد المنصة على نموذج عام يرصد البيض المتشقق البني أو الأبيض. النموذج لا يصنف كل البيض السليم؛ لذلك عدم ظهور مربع لا يعني أن البيضة سليمة. عند تفعيل الفحص تُرسل لقطات من الفيديو إلى Roboflow. المطوّر: Ali Al-Mamoori</p>
   <button class="btn blue" style="margin-top:14px" onclick="this.closest('dialog').close()">إغلاق</button></dialog>
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
 <script>
 const $=s=>document.getElementById(s);
-const V=$('v'),C=$('c'),X=C.getContext('2d'),st=$('stage');
-const IC=document.createElement('canvas'),IX=IC.getContext('2d',{willReadFrequently:true});
-const AR={egg_tray:'صينية بيض',person:'عامل/شخص',car:'سيارة',truck:'شاحنة',bus:'حافلة',motorcycle:'دراجة نارية',bicycle:'دراجة',airplane:'طائرة',train:'قطار',boat:'قارب',bird:'طائر',cat:'قطة',dog:'كلب',horse:'حصان',sheep:'خروف',cow:'بقرة',elephant:'فيل',bear:'دب',zebra:'حمار وحشي',giraffe:'زرافة',backpack:'حقيبة ظهر',handbag:'حقيبة يد',bottle:'زجاجة',chair:'كرسي','cell phone':'هاتف',laptop:'حاسوب محمول','traffic light':'إشارة مرور'};
-const CAT={person:'p',egg_tray:'e'};'car truck bus motorcycle bicycle airplane train boat'.split(' ').forEach(k=>CAT[k]='v');'bird cat dog horse sheep cow elephant bear zebra giraffe'.split(' ').forEach(k=>CAT[k]='a');
-const COL={e:'#fbbf24',p:'#ff2d4d',v:'#22d3ee',a:'#34d399',o:'#fbbf24'},CN={e:'صواني بيض',p:'عمال/أشخاص',v:'مركبات',a:'حيوانات',o:'أشياء أخرى'};
-const cat=k=>CAT[k]||'o',ar=k=>AR[k]||k;
-const S={thr:.5,itv:6000};
-const series=new Map(),heat=new Float32Array(2304);let vname='';
-let model=null,busy=false,last=0,lastDraw=0,url=null,tracks=[],done=[],events=[],nid=1;
-
-const fmt=t=>{t=Number(t);if(!Number.isFinite(t)||t<0)return '00:00:00';t=Math.floor(t);return[String(Math.floor(t/3600)),String(Math.floor(t/60)%60),String(t%60)].map(n=>n.padStart(2,'0')).join(':')};
-function status(txt,cls){const e=$('sSt');e.textContent=txt;e.className=cls;$('bRetry').hidden=cls!=='st-err'}
-
-/* ---------- تحميل النموذج ---------- */
-async function loadModel(){
-  status('جارٍ تحميل النموذج…','st-wait');
-  try{
-    if(!window.cocoSsd||!window.tf)throw new Error('lib');
-    model=await cocoSsd.load({base:'lite_mobilenet_v2'});
-    status(V.src?'جاهز للتحليل':'جاهز · اختر فيديو','st-ok');
-  }catch(e){model=null;status('فشل تحميل النموذج','st-err');$('msg').textContent='تعذّر تحميل مكتبات الذكاء الاصطناعي. تحقق من الاتصال بالإنترنت ثم اضغط «إعادة المحاولة».'}
-}
-$('bRetry').onclick=loadModel;
-
-/* ---------- الفيديو ---------- */
-function loadGithubVideo(){
-  V.pause();resetResults();vname='eggs.mp4';V.src='eggs.mp4';V.load();
-  $('msg').textContent='';
-}
-function freeVideo(){if(url){V.pause();V.removeAttribute('src');V.load();URL.revokeObjectURL(url);url=null}}
-addEventListener('pagehide',freeVideo);
-function refreshVideoMeta(){if(Number.isFinite(V.duration)&&V.duration>0)$('sDur').textContent=fmt(V.duration);syncTime()}
-V.onloadedmetadata=()=>{$('msg').textContent='';refreshVideoMeta();if(model)status('جاهز للتحليل','st-ok')};
-V.ondurationchange=refreshVideoMeta;
-function fitVideoFrame(){if(!V.videoWidth||!V.videoHeight)return;const st=$('stage');st.style.aspectRatio=V.videoWidth+'/'+V.videoHeight;st.style.maxHeight=window.matchMedia('(max-width:560px)').matches?'42vh':window.matchMedia('(max-width:1100px)').matches?'48vh':'min(52vh,560px)';draw()}
-V.addEventListener('loadedmetadata',fitVideoFrame);
-V.addEventListener('resize',fitVideoFrame);
-window.addEventListener('resize',fitVideoFrame);
-V.onerror=()=>{status('تعذّر تحميل فيديو GitHub','st-err')};
+const V=$('v'),C=$('c'),X=C.getContext('2d'),stage=$('stage'),capCanvas=document.createElement('canvas'),cap=capCanvas.getContext('2d');
+const S={interval:6000,confidence:35},MODEL='egg-crack-detection-eu65a/1';
+let apiKey='',busy=false,lastScan=0,tracks=[],events=[],nextId=1,current=[];
+const fmt=t=>{t=Number(t);if(!Number.isFinite(t)||t<0)return'00:00:00';t=Math.floor(t);return[String(Math.floor(t/3600)),String(Math.floor(t/60)%60),String(t%60)].map(n=>n.padStart(2,'0')).join(':')};
+function status(t,c='st-wait'){$('sSt').textContent=t;$('sSt').className=c}
+function notice(t){$('analysisNotice').textContent=t}
+function renderAll(){renderStats();renderEggStatuses();renderLog();drawTL()}
+function resetResults(){tracks=[];events=[];current=[];nextId=1;renderAll();draw()}
+function loadGithubVideo(){V.pause();resetResults();V.src='eggs.mp4';V.load();notice(apiKey?'جاهز — شغّل الفيديو لبدء فحص الشقوق.':'أدخل مفتاح Roboflow من الإعدادات لتفعيل كشف الشقوق.')}
+function syncTime(){const d=Number.isFinite(V.duration)?V.duration:0,t=V.currentTime||0;$('tm').textContent=fmt(t)+' / '+fmt(d);$('seek').value=d?Math.min(1000,t/d*1000):0;drawTL()}
+function fitVideoFrame(){if(!V.videoWidth)return;stage.style.aspectRatio=V.videoWidth+'/'+V.videoHeight;stage.style.maxHeight=matchMedia('(max-width:560px)').matches?'42vh':matchMedia('(max-width:1100px)').matches?'48vh':'min(52vh,560px)';draw()}
+V.addEventListener('loadedmetadata',()=>{$('sDur').textContent=fmt(V.duration);syncTime();fitVideoFrame();status(apiKey?'جاهز للفحص':'بانتظار مفتاح النموذج',apiKey?'st-ok':'st-wait')});
+V.addEventListener('timeupdate',syncTime);
+V.addEventListener('play',()=>{$('bPlay').textContent='⏸ إيقاف مؤقت';status(apiKey?'الفيديو يعمل — الفحص بالخلفية':'الفيديو يعمل — الكشف غير مفعّل',apiKey?'st-run':'st-wait')});
+V.addEventListener('pause',()=>{$('bPlay').textContent='▶ تشغيل';if(!V.ended)status('متوقف مؤقتاً','st-wait')});
+V.addEventListener('ended',()=>{$('bPlay').textContent='▶ تشغيل';status('انتهى الفيديو','st-ok')});
+V.addEventListener('error',()=>{status('تعذّر تحميل eggs.mp4','st-err');notice('تعذّر تحميل فيديو GitHub. أعد تحميل الصفحة أو اضغط زر إعادة تحميل الفيديو.')});
 $('bGithub').onclick=loadGithubVideo;
-$('bPlay').onclick=()=>{if(!V.src){loadGithubVideo();V.addEventListener('loadedmetadata',()=>V.play(),{once:true});return}V.paused?V.play():V.pause()};
-$('bRe').onclick=()=>{if(!V.src)return;resetResults();V.currentTime=0;V.play()};
+$('bPlay').onclick=async()=>{if(!V.src){loadGithubVideo();V.addEventListener('loadedmetadata',()=>V.play().catch(()=>{}),{once:true});return}if(V.paused){try{await V.play()}catch(e){notice('اضغط تشغيل مرة ثانية إذا منع المتصفح التشغيل التلقائي.')}}else V.pause()};
+$('bRe').onclick=()=>{if(!V.src)return;resetResults();V.currentTime=0;V.play().catch(()=>{})};
 $('spd').onchange=e=>V.playbackRate=+e.target.value;
 $('seek').oninput=e=>{if(V.duration)V.currentTime=V.duration*e.target.value/1000};
-V.onplay=()=>{$('bPlay').textContent='⏸ إيقاف مؤقت';status(model?'قيد التحليل…':'بانتظار النموذج…',model?'st-run':'st-wait')};
-V.onpause=()=>{$('bPlay').textContent='▶ تشغيل';if(!V.ended&&model)status('متوقف مؤقتاً','st-wait')};
-V.onended=()=>{closeAll(V.duration);$('bPlay').textContent='▶ تشغيل';status('اكتمل التحليل','st-ok')};
-V.onseeking=()=>closeAll(Math.min(V.currentTime,tracks.reduce((m,k)=>Math.max(m,k.last),0)||V.currentTime));
-function syncTime(){drawTL();const d=Number.isFinite(V.duration)&&V.duration>0?V.duration:0,t=Number.isFinite(V.currentTime)?V.currentTime:0;$('tm').textContent=fmt(t)+' / '+fmt(d);if(d)$('seek').value=Math.max(0,Math.min(1000,t/d*1000))}
-V.ontimeupdate=syncTime;
-$('bFull').onclick=()=>{const w=$('win');document.fullscreenElement?document.exitFullscreen():(w.requestFullscreen||w.webkitRequestFullscreen).call(w)};
-
-/* ---------- تحريك النافذة ---------- */
-(()=>{const w=$('win');let sx,sy,ox=0,oy=0,on=false;
-$('wh').addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;on=true;sx=e.clientX;sy=e.clientY;e.currentTarget.setPointerCapture(e.pointerId);$('wh').style.cursor='grabbing'});
-$('wh').addEventListener('pointermove',e=>{if(!on)return;w.style.transform=`translate(${ox+e.clientX-sx}px,${oy+e.clientY-sy}px)`});
-$('wh').addEventListener('pointerup',e=>{if(!on)return;on=false;ox+=e.clientX-sx;oy+=e.clientY-sy;$('wh').style.cursor='grab'});
-})();
-
-/* ---------- كشف منطقة المنتج على السير (تحليل لوني بدون نموذج مدرَّب) ---------- */
-function findTrays(d,w,h,G){
-  const gw=w/G|0,gh=h/G|0,N=gw*gh,cnt=new Uint16Array(N),sh=new Float32Array(N),ss=new Float32Array(N),sv=new Float32Array(N);
-  for(let y=0;y<gh*G;y++)for(let x=0;x<gw*G;x++){
-    const i=(y*w+x)*4,r=d[i]/255,g=d[i+1]/255,b=d[i+2]/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),df=mx-mn;
-    if(mx<.27||df===0)continue;const s=df/mx;if(s<.35)continue;
-    let H=mx===r?((g-b)/df)%6:mx===g?(b-r)/df+2:(r-g)/df+4;H*=60;if(H<0)H+=360;
-    if(H<10||H>50)continue;
-    const c=(y/G|0)*gw+(x/G|0);cnt[c]++;sh[c]+=H;ss[c]+=s;sv[c]+=mx}
-  const on=new Uint8Array(N),dil=new Uint8Array(N),T=G*G*.55;
-  for(let i=0;i<N;i++)on[i]=cnt[i]>=T?1:0;
-  for(let y=0;y<gh;y++)for(let x=0;x<gw;x++){if(on[y*gw+x])dil[y*gw+x]=1;}
-  const seen=new Uint8Array(N),out=[];
-  for(let s0=0;s0<N;s0++){
-    if(!dil[s0]||seen[s0])continue;
-    const st=[s0];seen[s0]=1;let x0=1e9,y0=1e9,x1=-1,y1=-1,n=0,H=0,S=0,V=0,pc=0;
-    while(st.length){const c=st.pop(),cx=c%gw,cy=c/gw|0;
-      if(on[c]){n++;x0=Math.min(x0,cx);x1=Math.max(x1,cx);y0=Math.min(y0,cy);y1=Math.max(y1,cy);H+=sh[c];S+=ss[c];V+=sv[c];pc+=cnt[c]}
-      for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const X=cx+dx,Y=cy+dy;if(X>=0&&Y>=0&&X<gw&&Y<gh){const q=Y*gw+X;if(dil[q]&&!seen[q]){seen[q]=1;st.push(q)}}}}
-    if(n<25)continue;
-    const bw=(x1-x0+1)*G,bh=(y1-y0+1)*G,area=bw*bh,ratio=bw/bh;
-    if(area>w*h*.18||ratio<.30||ratio>3.2||bw>w*.72||bh>h*.72)continue;
-    out.push({bbox:[x0*G,y0*G,bw,bh],cells:n,h:H/pc,s:S/pc,v:V/pc});
-  }
-  return out;
+$('bFull').onclick=()=>{const w=$('win');if(document.fullscreenElement)document.exitFullscreen();else if(w.requestFullscreen)w.requestFullscreen()};
+window.addEventListener('resize',fitVideoFrame);
+function iou(a,b){const x=Math.max(a[0],b[0]),y=Math.max(a[1],b[1]),xx=Math.min(a[0]+a[2],b[0]+b[2]),yy=Math.min(a[1]+a[3],b[1]+b[3]),i=Math.max(0,xx-x)*Math.max(0,yy-y);return i/(a[2]*a[3]+b[2]*b[3]-i||1)}
+function addEvent(t,k){events.push({t,id:k.id,cls:k.cls,confidence:k.confidence});events.sort((a,b)=>a.t-b.t)}
+function updateTracks(preds,t,sx,sy){
+ const used=new Set(),fresh=[];
+ for(const p of preds){const box=[(p.x-p.width/2)*sx,(p.y-p.height/2)*sy,p.width*sx,p.height*sy];let best=null,bi=.12;
+  for(const k of tracks){if(used.has(k))continue;const v=iou(k.box,box);if(v>bi){bi=v;best=k}}
+  if(!best){best={id:nextId++,first:t,last:t,hits:0,box,cls:p.class||'بيض متشقق',confidence:p.confidence||0};tracks.push(best);addEvent(t,best)}
+  used.add(best);Object.assign(best,{box,last:t,hits:best.hits+1,confidence:Math.max(best.confidence,p.confidence||0),cls:p.class||best.cls});fresh.push({...best,box});
+ }
+ tracks=tracks.filter(k=>t-k.last<Math.max(18,S.interval/1000*4));current=fresh;renderAll();draw();
 }
-const ZC=document.createElement('canvas'),ZX=ZC.getContext('2d',{willReadFrequently:true});
-function zoneDets(){
-  const vw=V.videoWidth,vh=V.videoHeight;if(!vw)return[];
-  ZC.width=176;ZC.height=Math.max(1,Math.round(176*vh/vw));ZX.drawImage(V,0,0,ZC.width,ZC.height);
-  const k=vw/176,cs=findTrays(ZX.getImageData(0,0,ZC.width,ZC.height).data,ZC.width,ZC.height,4);
-  const hs=cs.map(c=>c.h).sort((a,b)=>a-b),mid=hs.length>>1,ref=hs.length?(hs.length%2?hs[mid]:(hs[mid-1]+hs[mid])/2):16.5;
-  return cs.map(c=>({class:'egg_tray',score:1,sus:hs.length>=2?Math.abs(c.h-ref)>=2.5:null,bbox:c.bbox.map(v=>v*k)}));
+async function analyzeFrame(){
+ if(!apiKey||busy||V.paused||V.ended||V.readyState<2||!V.videoWidth)return;
+ busy=true;lastScan=performance.now();
+ try{const w=Math.min(640,V.videoWidth),h=Math.max(1,Math.round(w*V.videoHeight/V.videoWidth));capCanvas.width=w;capCanvas.height=h;cap.drawImage(V,0,0,w,h);
+  const data=capCanvas.toDataURL('image/jpeg',.72).split(',')[1],url='https://detect.roboflow.com/'+MODEL+'?api_key='+encodeURIComponent(apiKey)+'&confidence='+S.confidence+'&overlap=30';
+  const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:data});
+  if(!res.ok){let m='HTTP '+res.status;try{const q=await res.json();m=q.message||q.error||m}catch(e){}throw Error(m)}
+  const out=await res.json(),p=Array.isArray(out.predictions)?out.predictions:[];updateTracks(p,V.currentTime,V.videoWidth/w,V.videoHeight/h);
+  notice(p.length?'رصد النموذج '+p.length+' احتمال شق. راجع المربعات الحمراء.':'لم يرصد شقوقاً في هذه اللقطة؛ هذا لا يثبت سلامة البيض.');status('آخر فحص '+fmt(V.currentTime)+' · '+p.length+' رصد','st-run');
+ }catch(e){status('فشل فحص Roboflow','st-err');notice('تعذّر الفحص: '+(e.message||'تحقق من المفتاح والإنترنت')+' — الفيديو يستمر بالتشغيل.')}
+ finally{busy=false}
 }
-/* ---------- التتبع ---------- */
-function iou(a,b){const x=Math.max(a[0],b[0]),y=Math.max(a[1],b[1]),X2=Math.min(a[0]+a[2],b[0]+b[2]),Y2=Math.min(a[1]+a[3],b[1]+b[3]);const i=Math.max(0,X2-x)*Math.max(0,Y2-y);return i/(a[2]*a[3]+b[2]*b[3]-i||1)}
-function addEv(t,type,k){events.push({t,type,cls:k.cls,id:k.id});events.sort((a,b)=>a.t-b.t);renderLog()}
-function update(dets,t){
-  const used=new Set();
-  for(const d of dets){
-    if(d.score<S.thr)continue;
-    let best=null,bi=.2;
-    for(const k of tracks){if(used.has(k)||k.cls!==d.class)continue;const i=iou(k.b,d.bbox);if(i>bi){bi=i;best=k}}
-    if(!best){best={id:nid++,cls:d.class,first:t,hits:0,ok:false,b:d.bbox};tracks.push(best)}
-    used.add(best);best.b=best.b.map((v,i)=>v*.5+d.bbox[i]*.5);best.s=d.score;best.last=t;best.hits++;trackFx(best);if(d.sus===null){if(best.sus===undefined)best.sus=null}else{best.sus=best.sus===undefined||best.sus===null?(d.sus?1:0):best.sus*.7+(d.sus?.3:0)}
-    if(!best.ok&&best.hits>=2){best.ok=true;done.push(best);addEv(best.first,'ظهور',best)}
-  }
-  tracks=tracks.filter(k=>{if(t-k.last>Math.max(5,S.itv/1000*2)){if(k.ok)addEv(k.last,'اختفاء',k);return false}return true});
-  sample(t);renderStats();renderEggStatuses();drawTL();
-}
-function closeAll(t){tracks.forEach(k=>{if(k.ok)addEv(Math.max(k.last,Math.min(t,k.last+1.5)),'اختفاء',k)});tracks=[];renderStats()}
-function resetResults(){series.clear();heat.fill(0);setTimeout(drawTL);tracks=[];done=[];events=[];nid=1;renderLog();renderStats();renderEggStatuses()}
-
-/* ---------- العرض ---------- */
-function renderLog(){
-  const L=$('log');
-  if(!events.length){L.innerHTML='<p class="muted">لا توجد أحداث بعد. اضغط على حدث للانتقال إلى توقيته.</p>';return}
-  L.innerHTML='';
-  events.forEach(e=>{const b=document.createElement('button');b.className='ev';
-    b.innerHTML=`<span class="sw" style="background:${COL[cat(e.cls)]}"></span><span>${e.type} ${ar(e.cls)} #${e.id}</span><span class="t">${fmt(e.t)}</span>`;
-    b.onclick=()=>{V.currentTime=e.t};L.appendChild(b)});
-  L.scrollTop=L.scrollHeight;
-}
-function renderEggStatuses(){
-  const groups=done.filter(k=>k.cls==='egg_tray').slice(-12).reverse();
-  $('eggGroupCount').textContent=groups.length+' مجموعة';
-  if(!groups.length){$('eggStatusList').innerHTML='<p class="muted">لم يتم رصد مجموعات بيض بعد. شغّل الفيديو وانتظر ظهور مربعات الكشف.</p>';return}
-  $('eggStatusList').innerHTML=groups.map(k=>{
-    const label='سلامة القشرة غير محددة — لا يوجد نموذج كشف كسر';
-    const color='#94a3b8';
-    return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:9px 10px;border:1px solid var(--line);border-right:4px solid '+color+';border-radius:9px;background:var(--navy2)"><b>مجموعة البيض #'+k.id+'</b><span style="color:'+color+';font-weight:700">'+label+'</span><small class="muted">مرات الرصد: '+k.hits+'</small></div>';
-  }).join('');
-}
-function renderStats(){
-  const n={p:0,e:0,v:0,a:0,o:0},kinds={};
-  done.forEach(k=>{n[cat(k.cls)]++;kinds[k.cls]=(kinds[k.cls]||0)+1});
-  const tot=done.length;
-  $('cT').textContent=tot;$('cP').textContent=n.p;const bad=done.filter(k=>k.cls==='egg_tray'&&k.sus>.5).length,unknown=done.filter(k=>k.cls==='egg_tray'&&(k.sus===null||k.sus===undefined)).length;$('cV').textContent=n.e-bad-unknown;$('cA').textContent=bad;$('sTot').textContent=tot;
-  let acc=0,g=[];
-  ['p','e','v','a','o'].forEach(c=>{if(n[c]){const s=acc/tot*100;acc+=n[c];g.push(`${COL[c]} ${s}% ${acc/tot*100}%`)}});
-  $('dn').style.background=tot?`conic-gradient(${g.join(',')})`:'conic-gradient(var(--line) 0 100%)';
-  $('dnT').textContent=tot?tot:'—';
-  $('leg').innerHTML=['p','e','v','a','o'].map(c=>`<p><span class="sw" style="background:${COL[c]}"></span><span>${CN[c]}</span><span>${n[c]}${tot?' · '+(n[c]/tot*100).toFixed(0)+'%':''}</span></p>`).join('');
-  const ks=Object.keys(kinds);
-  $('sum').innerHTML=ks.length?`<b>${ks.length} نوع مكتشف:</b> `+ks.map(k=>`${ar(k)} (${kinds[k]})`).join('، '):'لم يتم اكتشاف أي عنصر بعد.';
-  if(n.p)$('sum').innerHTML+=`<br>إجمالي زمن ظهور الأشخاص: ${done.filter(k=>k.cls==='person').reduce((q,k)=>q+Math.max(0,k.last-k.first),0).toFixed(1)} ثانية`;
-}
-renderStats();renderEggStatuses();
-
 function draw(){
-  const w=C.clientWidth,h=C.clientHeight,d=devicePixelRatio||1;
-  if(C.width!==Math.round(w*d)||C.height!==Math.round(h*d)){C.width=Math.round(w*d);C.height=Math.round(h*d)}
-  X.setTransform(d,0,0,d,0,0);X.clearRect(0,0,w,h);
-  const vw=V.videoWidth,vh=V.videoHeight;if(!vw)return;
-  const sc=Math.min(w/vw,h/vh),ox=(w-vw*sc)/2,oy=(h-vh*sc)/2,t=V.currentTime;
-  if($('tHeat').checked){let m=0;for(const v of heat)m=Math.max(m,v);if(m){const cw=vw*sc/48,ch=vh*sc/48;for(let i=0;i<2304;i++)if(heat[i]){X.fillStyle=`rgba(255,45,77,${Math.min(.65,heat[i]/m*.65)})`;X.fillRect(ox+(i%48)*cw,oy+(i/48|0)*ch,cw+1,ch+1)}}}
-  X.font='600 12px Cairo,sans-serif';X.textBaseline='middle';
-  for(const k of tracks.slice(-12)){
-    if(!k.ok||t-k.last>Math.max(5,S.itv/1000*2))continue;
-    const c=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'#94a3b8':k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],[x,y,bw,bh]=k.b,px=ox+x*sc,py=oy+y*sc;
-    X.strokeStyle=c;X.lineWidth=2;X.strokeRect(px,py,bw*sc,bh*sc);
-    if($('tTrail').checked&&k.tr&&k.tr.length>1){X.beginPath();k.tr.forEach((q,i)=>{const a=ox+q[0]*sc,b=oy+q[1]*sc;i?X.lineTo(a,b):X.moveTo(a,b)});X.globalAlpha=.7;X.stroke();X.globalAlpha=1}
-    const label=k.cls==='egg_tray'?'غير محدد':`${ar(k.cls)} ${(k.s*100).toFixed(0)}%`;
-    const tagW=Math.min(Math.max(48,X.measureText(label).width+14),Math.max(48,bw*sc-4),Math.max(48,w-px));
-    const tagH=18,tagX=Math.max(0,Math.min(px+2,w-tagW)),tagY=Math.max(0,Math.min(py+2,h-tagH));
-    X.save();X.globalAlpha=.92;X.fillStyle=c;X.beginPath();X.roundRect(tagX,tagY,tagW,tagH,5);X.fill();
-    X.globalAlpha=1;X.fillStyle='#fff';X.font='700 10px Cairo,sans-serif';X.textAlign='center';X.fillText(label,tagX+tagW/2,tagY+tagH/2);X.restore();X.textAlign='start';X.font='600 12px Cairo,sans-serif';
-  }
+ const w=C.clientWidth,h=C.clientHeight,d=devicePixelRatio||1;if(!w||!h)return;if(C.width!==Math.round(w*d)||C.height!==Math.round(h*d)){C.width=Math.round(w*d);C.height=Math.round(h*d)}
+ X.setTransform(d,0,0,d,0,0);X.clearRect(0,0,w,h);if(!V.videoWidth)return;
+ const sc=Math.min(w/V.videoWidth,h/V.videoHeight),ox=(w-V.videoWidth*sc)/2,oy=(h-V.videoHeight*sc)/2;
+ for(const p of current){const [x,y,bw,bh]=p.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label='شق محتمل '+Math.round(p.confidence*100)+'%';X.save();X.strokeStyle='#ff354f';X.lineWidth=2.5;X.strokeRect(px,py,ww,hh);X.font='700 11px Cairo,sans-serif';const tw=Math.min(Math.max(88,X.measureText(label).width+16),Math.max(88,ww)),tx=Math.max(0,Math.min(px,w-tw)),ty=Math.max(0,Math.min(py,h-22));X.fillStyle='#c91f39';X.beginPath();X.roundRect(tx,ty,tw,20,5);X.fill();X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(label,tx+tw/2,ty+10);X.restore()}
 }
-new ResizeObserver(draw).observe(st);
-
-async function tick(now){
-  if(now-lastDraw>=150){draw();lastDraw=now;}
-  if(!busy&&!V.paused&&!V.ended&&V.readyState>=2&&now-last>=S.itv){
-    busy=true;
-    try{const t=V.currentTime,dets=zoneDets();if(!V.paused)update(dets,t)}
-    catch(e){status('تعذّر تحليل إطار الفيديو','st-err')}
-    busy=false;last=performance.now();
-  }
-  requestAnimationFrame(tick);
-}
-requestAnimationFrame(tick);
-
-
-/* ---------- مبدّل ألوان الموقع ---------- */
-const themeNames=['blue-yellow','purple-orange','black-red','green-black','navy-cyan','pink-purple','burgundy-gold','teal-coral','sky-light','mint-light','lavender-light','rose-light','peach-light','lemon-light'];
-function setTheme(name){
-  if(!themeNames.includes(name))name='blue-yellow';
-  document.body.dataset.theme=name;
-  try{localStorage.setItem('alex-guard-theme',name)}catch(e){}
-  document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('active',b.dataset.themeChoice===name));
-}
-let savedTheme='blue-yellow';try{savedTheme=localStorage.getItem('alex-guard-theme')||savedTheme}catch(e){}
-setTheme(savedTheme);
-$('themeOpen').onclick=()=>$('dTheme').showModal();
-$('themeClose').onclick=()=>$('dTheme').close();
-document.querySelectorAll('[data-theme-choice]').forEach(b=>b.onclick=()=>setTheme(b.dataset.themeChoice));
-/* ---------- الإعدادات والقائمة ---------- */
-$('thr').oninput=e=>{S.thr=e.target.value/100;$('thV').textContent=e.target.value+'%'};
-$('itv').onchange=e=>S.itv=+e.target.value;
-$('nSet').onclick=()=>$('dSet').showModal();
-$('nAbout').onclick=()=>$('dAbout').showModal();
-$('nHome').onclick=()=>scrollTo({top:0,behavior:'smooth'});
-$('nLog').onclick=()=>$('log').scrollIntoView({behavior:'smooth',block:'center'});
-$('bCsv').onclick=()=>{
-  if(!events.length)return alert('لا توجد أحداث لتصديرها بعد.');
-  const rows=['الوقت,الحدث,العنصر,المعرف,الوقت بالثواني',...events.map(e=>[fmt(e.t),e.type,ar(e.cls),e.id,e.t.toFixed(2)].join(','))];
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+rows.join('\n')],{type:'text/csv'}));a.download='alex-guard-ai-events.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
-};
-/* ---------- مخطط زمني، مسارات، حرارة، لقطة، تقرير ---------- */
-function trackFx(k){
-  const cx=k.b[0]+k.b[2]/2;(k.tr=k.tr||[]).push([cx,k.b[1]+k.b[3]/2]);if(k.tr.length>40)k.tr.shift();
-  if(k.ok&&V.videoWidth){const gx=Math.max(0,Math.min(47,cx/V.videoWidth*48|0)),gy=Math.max(0,Math.min(47,(k.b[1]+k.b[3])/V.videoHeight*48|0));heat[gy*48+gx]++}
-}
-function sample(t){const c={p:0,e:0,v:0,a:0,o:0};tracks.forEach(k=>{if(k.ok&&t-k.last<Math.max(4,S.itv/1000*1.8))c[cat(k.cls)]++});series.set(Math.floor(t*2),c)}
-function drawTL(){
-  const c=$('tl'),w=c.clientWidth,h=c.clientHeight,d=devicePixelRatio||1;if(!w)return;
-  if(c.width!==Math.round(w*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}
-  const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);g.fillStyle='#142849';g.fillRect(0,0,w,h);
-  const D=V.duration;if(!D)return;let mx=1;series.forEach(o=>mx=Math.max(mx,o.p+o.v+o.a+o.o));
-  const bw=Math.max(2,w/(D*2));
-  series.forEach((o,k)=>{let y=h-14;const x=w-(k/2/D)*w-bw;['p','e','v','a','o'].forEach(q=>{const hh=o[q]/mx*(h-26);g.fillStyle=COL[q];g.fillRect(x,y-hh,bw,hh);y-=hh})});
-  g.fillStyle='#7f93b8';g.font='11px Cairo,sans-serif';g.fillText('00:00:00',w-52,h-2);g.fillText(fmt(D),2,h-2);
-  g.fillStyle='#fff';g.fillRect(w-(V.currentTime/D)*w-1,0,2,h-14);
-}
+function renderEggStatuses(){const list=$('eggStatusList'),a=tracks.slice().sort((x,y)=>y.last-x.last).slice(0,20);$('eggGroupCount').textContent=a.length+' رصد';if(!a.length){list.innerHTML='<p class="muted">لا توجد شقوق مرصودة بعد. شغّل الفيديو مع تفعيل مفتاح النموذج.</p>';return}list.innerHTML=a.map(k=>'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px;border:1px solid var(--line);border-right:4px solid #ff354f;border-radius:9px;background:var(--navy2)"><b>بيضة مشتبه بها #'+k.id+'</b><span style="color:#ff354f;font-weight:800">شق محتمل · '+Math.round(k.confidence*100)+'%</span><small class="muted">آخر رصد '+fmt(k.last)+' · تكرار '+k.hits+'</small></div>').join('')}
+function renderLog(){const l=$('log');if(!events.length){l.innerHTML='<p class="muted">لا توجد حالات مرصودة حتى الآن.</p>';return}l.innerHTML='';events.slice(-80).reverse().forEach(e=>{const b=document.createElement('button');b.className='ev';b.innerHTML='<span class="sw" style="background:#ff354f"></span><span>شق محتمل في بيضة #'+e.id+' ('+Math.round(e.confidence*100)+'%)</span><span class="t">'+fmt(e.t)+'</span>';b.onclick=()=>V.currentTime=e.t;l.appendChild(b)})}
+function renderStats(){const brown=tracks.filter(k=>/brown/i.test(k.cls)).length,white=tracks.filter(k=>/white/i.test(k.cls)).length,active=tracks.filter(k=>V.currentTime-k.last<Math.max(12,S.interval/1000*3)).length;$('cT').textContent=tracks.length;$('cP').textContent=brown;$('cV').textContent=white;$('cA').textContent=active;$('sTot').textContent=tracks.length;$('dnT').textContent=tracks.length||'—';$('dn').style.background=tracks.length?'conic-gradient(#ff354f 0 100%)':'conic-gradient(var(--line) 0 100%)';$('leg').innerHTML='<p><span class="sw" style="background:#ff354f"></span><span>شقوق محتملة</span><span>'+tracks.length+'</span></p><p><span class="sw" style="background:var(--line)"></span><span>بيض غير مصنف</span><span>غير متاح</span></p>';$('sum').textContent=tracks.length?'رُصدت '+tracks.length+' بيضة مشتبه بها. يلزم فحص بصري للتأكيد.':'لم تُسجّل شقوق محتملة بعد. عدم الرصد لا يعني أن البيض سليم.'}
+function renderAll(){renderStats();renderEggStatuses();renderLog();drawTL()}
+function drawTL(){const c=$('tl'),w=c.clientWidth,h=c.clientHeight,d=devicePixelRatio||1;if(!w)return;if(c.width!==Math.round(w*d)||c.height!==Math.round(h*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);g.clearRect(0,0,w,h);g.fillStyle='#142849';g.fillRect(0,0,w,h);const dur=Number.isFinite(V.duration)?V.duration:0;if(!dur)return;g.strokeStyle='#ff354f';g.lineWidth=2;events.forEach(e=>{const x=w-e.t/dur*w;g.beginPath();g.moveTo(x,8);g.lineTo(x,h-16);g.stroke()});g.fillStyle='#22d3ee';g.fillRect(w-V.currentTime/dur*w-1,0,2,h-14);g.fillStyle='#7f93b8';g.font='11px Cairo,sans-serif';g.fillText('00:00:00',w-52,h-2);g.fillText(fmt(dur),2,h-2)}
 $('tl').onclick=e=>{if(V.duration){const r=e.currentTarget.getBoundingClientRect();V.currentTime=(1-(e.clientX-r.left)/r.width)*V.duration}};
-addEventListener('resize',drawTL);
-$('bShot').onclick=()=>{
-  if(!V.videoWidth)return;const o=document.createElement('canvas');o.width=V.videoWidth;o.height=V.videoHeight;
-  const g=o.getContext('2d'),t=V.currentTime;g.drawImage(V,0,0);g.font='600 '+Math.max(14,o.width/40)+'px Cairo,sans-serif';
-  tracks.forEach(k=>{if(!k.ok||t-k.last>Math.max(5,S.itv/1000*2))return;const c=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'#94a3b8':k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],L=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'مقارنة غير كافية':k.sus>.5?'انحراف لوني':'لون قريب من المتوسط'):ar(k.cls)+' '+(k.s*100|0)+'%',fs=Math.max(14,o.width/40);
-    g.strokeStyle=c;g.lineWidth=Math.max(2,o.width/300);g.strokeRect(...k.b);g.fillStyle=c;g.fillRect(k.b[0],k.b[1]-fs-6,g.measureText(L).width+10,fs+6);g.fillStyle='#02060e';g.fillText(L,k.b[0]+5,k.b[1]-8)});
-  o.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='alex-guard-'+fmt(t).replace(/:/g,'-')+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
-};
-$('bRep').onclick=()=>{
-  if(!done.length&&!events.length)return alert('لا توجد نتائج بعد. شغّل الفيديو أولاً.');
-  const w=open('','_blank');if(!w)return alert('اسمح بالنوافذ المنبثقة لعرض التقرير.');
-  const n={p:0,e:0,v:0,a:0,o:0};done.forEach(k=>n[cat(k.cls)]++);
-  const dw=done.filter(k=>k.cls==='person').reduce((q,k)=>q+Math.max(0,k.last-k.first),0);
-  w.document.write(`<html dir="rtl" lang="ar"><meta charset="utf-8"><title>تقرير ALEX GUARD AI</title><style>body{font-family:Cairo,Tahoma,sans-serif;padding:24px;color:#111}h1{color:#b3122c}table{border-collapse:collapse;width:100%;margin-top:12px}td,th{border:1px solid #bbb;padding:6px;text-align:right}img{width:100%;border:1px solid #bbb}</style><h1>ALEX GUARD AI — تقرير تحليل فيديو</h1><p>الملف: ${vname||'—'} | المدة: ${fmt(V.duration)} | التاريخ: ${new Date().toLocaleString('ar')}</p><p>المحرك: COCO-SSD (TensorFlow.js) · حد الثقة ${Math.round(S.thr*100)}%</p><p>الإجمالي: ${done.length} — أشخاص ${n.p}، مركبات ${n.v}، حيوانات ${n.a}، أخرى ${n.o}. إجمالي زمن ظهور الأشخاص: ${dw.toFixed(1)} ثانية.</p><img src="${$('tl').toDataURL()}"><table><tr><th>الوقت</th><th>الحدث</th><th>العنصر</th><th>المعرّف</th></tr>${events.map(e=>`<tr><td>${fmt(e.t)}</td><td>${e.type}</td><td>${ar(e.cls)}</td><td>${e.id}</td></tr>`).join('')}</table><p style="color:#666;font-size:12px">التتبع تقريبي، والنموذج لا يكتشف عيوب المنتجات. المطوّر: Ali Al-Mamoori</p>`);
-  w.document.close();setTimeout(()=>w.print(),500);
-};
-loadModel();
-loadGithubVideo();
+$('bShot').onclick=()=>{if(!V.videoWidth)return;const o=document.createElement('canvas');o.width=V.videoWidth;o.height=V.videoHeight;const g=o.getContext('2d');g.drawImage(V,0,0);current.forEach(p=>{g.strokeStyle='#ff354f';g.lineWidth=Math.max(3,o.width/400);g.strokeRect(...p.box);g.fillStyle='#c91f39';g.font='bold '+Math.max(18,o.width/45)+'px Arial';g.fillText('شق محتمل '+Math.round(p.confidence*100)+'%',p.box[0],Math.max(22,p.box[1]-8))});o.toBlob(b=>{if(!b)return;const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='alex-guard-'+fmt(V.currentTime).replace(/:/g,'-')+'.jpg';a.click();setTimeout(()=>URL.revokeObjectURL(u),1500)},'image/jpeg',.9)};
+$('bCsv').onclick=()=>{if(!events.length)return alert('لا توجد حالات مرصودة بعد.');const rows=['الوقت,الحالة,المعرف,الثقة',...events.map(e=>[fmt(e.t),'شق محتمل',e.id,(e.confidence*100).toFixed(1)+'%'].join(','))],a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff'+rows.join('\n')],{type:'text/csv;charset=utf-8'}));a.href=u;a.download='alex-guard-crack-events.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1500)};
+$('bRep').onclick=()=>{if(!events.length)return alert('لا توجد نتائج لتقريرها بعد.');const w=window.open('','_blank');if(!w)return alert('اسمح بالنوافذ المنبثقة.');w.document.write('<html lang="ar" dir="rtl"><meta charset="utf-8"><title>ALEX GUARD AI</title><style>body{font-family:Arial;padding:24px}h1{color:#c91f39}table{border-collapse:collapse;width:100%}td,th{border:1px solid #bbb;padding:8px;text-align:right}</style><h1>ALEX GUARD AI</h1><p>تقرير رصد الشقوق المحتملة — '+new Date().toLocaleString('ar')+'</p><p>الفيديو: eggs.mp4 | المدة: '+fmt(V.duration)+'</p><table><tr><th>الوقت</th><th>المعرف</th><th>الثقة</th></tr>'+events.map(e=>'<tr><td>'+fmt(e.t)+'</td><td>'+e.id+'</td><td>'+Math.round(e.confidence*100)+'%</td></tr>').join('')+'</table><p>النتائج مؤشرات آلية أولية. عدم ظهور نتيجة لا يثبت سلامة البيضة.</p><p>Ali Al-Mamoori</p>');w.document.close();setTimeout(()=>w.print(),400)};
+$('bRetry').onclick=()=>{if(apiKey)analyzeFrame();else $('dSet').showModal()};
+$('thr').oninput=e=>{$('thV').textContent=e.target.value+'%';S.confidence=+e.target.value};$('itv').onchange=e=>S.interval=+e.target.value;
+$('nSet').onclick=()=>$('dSet').showModal();$('nAbout').onclick=()=>$('dAbout').showModal();$('nHome').onclick=()=>scrollTo({top:0,behavior:'smooth'});$('nLog').onclick=()=>$('log').scrollIntoView({behavior:'smooth',block:'center'});
+$('saveKey').onclick=()=>{const k=$('rfKey').value.trim();if(!k)return alert('أدخل مفتاح Roboflow أولاً.');apiKey=k;try{localStorage.setItem('alex-guard-rf-key',k)}catch(e){}$('dSet').close();notice('تم حفظ المفتاح. شغّل الفيديو لتفعيل الفحص.');status('مفتاح النموذج محفوظ','st-ok');if(!V.paused)analyzeFrame()};
+try{apiKey=localStorage.getItem('alex-guard-rf-key')||''}catch(e){}$('rfKey').value=apiKey;
+function setTheme(name){const names=['blue-yellow','purple-orange','black-red','green-black','navy-cyan','pink-purple','burgundy-gold','teal-coral','sky-light','mint-light','lavender-light','rose-light','peach-light','lemon-light'];if(!names.includes(name))name='blue-yellow';document.body.dataset.theme=name;try{localStorage.setItem('alex-guard-theme',name)}catch(e){}document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('active',b.dataset.themeChoice===name))}
+let savedTheme='blue-yellow';try{savedTheme=localStorage.getItem('alex-guard-theme')||savedTheme}catch(e){}setTheme(savedTheme);$('themeOpen').onclick=()=>$('dTheme').showModal();$('themeClose').onclick=()=>$('dTheme').close();document.querySelectorAll('[data-theme-choice]').forEach(b=>b.onclick=()=>setTheme(b.dataset.themeChoice));
+function tick(now){draw();if(apiKey&&!V.paused&&!V.ended&&V.readyState>=2&&!busy&&now-lastScan>=S.interval)analyzeFrame();requestAnimationFrame(tick)}
+requestAnimationFrame(tick);status(apiKey?'المفتاح محفوظ — جاهز':'بانتظار مفتاح Roboflow',apiKey?'st-ok':'st-wait');loadGithubVideo();
 </script>
 </body>
 </html>
