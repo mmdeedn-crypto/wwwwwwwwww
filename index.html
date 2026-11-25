@@ -206,9 +206,9 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
     <div class="sum" id="sum">لم يتم اكتشاف أي عنصر بعد.</div>
   </section>
   <section class="panel">
-    <div class="lh"><h2>حالة مجموعات البيض</h2><span class="muted" id="eggGroupCount">0 مجموعة</span></div>
+    <div class="lh"><h2>المجموعات التي تحتوي مواضع شق مرصودة</h2><span class="muted" id="eggGroupCount">0 مجموعة</span></div>
     <div id="eggStatusList" style="display:grid;gap:8px;padding:10px 0"><p class="muted">شغّل الفيديو لعرض حالة كل مجموعة يتم رصدها.</p></div>
-    <p class="muted" style="font-size:11px;line-height:1.7">تنبيه: هذا الإصدار يحدد مواقع الصواني فقط. لا يستطيع تأكيد البيض المكسور أو السليم من دون نموذج مدرّب على صور الشقوق.</p>
+    <p class="muted" style="font-size:11px;line-height:1.7">تنبيه: المجموعات هنا تجميع تقريبي لمواضع الشقوق داخل الصورة، وليست حدود صوانٍ مكتشفة بنموذج مستقل. لا يمكن إعلان الصينية سليمة من دون نموذج مدرّب على السليم والمكسور.</p>
   </section>
   <section class="panel"><div class="lh"><h2>سجل الأحداث</h2><span style="display:flex;gap:6px"><button class="btn" id="bRep" style="padding:5px 12px">تقرير PDF</button><button class="btn" id="bCsv" style="padding:5px 12px">CSV</button></span></div>
     <div id="log"><p class="muted">اضغط على حدث للانتقال إلى توقيته في الفيديو.</p></div></section>
@@ -218,7 +218,7 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
   <div class="panel"><small>مدة الفيديو</small><strong id="sDur">00:00:00</strong></div>
   <div class="panel"><small>إجمالي الكائنات (ظهورات مؤكدة)</small><strong id="sTot">0</strong></div>
   <div class="panel"><small>حالة التحليل</small><strong id="sSt" class="st-wait">جارٍ تحميل النموذج…</strong><button class="btn" id="bRetry" hidden style="margin-top:6px">إعادة المحاولة</button></div>
-  <div class="panel"><small>محرك الذكاء الاصطناعي</small><strong style="color:var(--cyan);font-size:18px">Roboflow · Egg Crack Model</strong></div>
+  <div class="panel"><small>محرك الذكاء الاصطناعي</small><strong style="color:var(--cyan);font-size:18px">Roboflow · Egg Crack Model + Grouping</strong></div>
 </div>
 </div>
 
@@ -306,12 +306,12 @@ body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-them
 const $=s=>document.getElementById(s);
 const V=$('v'),C=$('c'),X=C.getContext('2d'),stage=$('stage'),capCanvas=document.createElement('canvas'),cap=capCanvas.getContext('2d');
 const S={interval:6000,confidence:35},MODEL='egg-crack-detection-eu65a/1';
-let apiKey='',busy=false,lastScan=0,tracks=[],events=[],nextId=1,current=[];
+let apiKey='',busy=false,lastScan=0,tracks=[],events=[],nextId=1,current=[],trayGroups=[];
 const fmt=t=>{t=Number(t);if(!Number.isFinite(t)||t<0)return'00:00:00';t=Math.floor(t);return[String(Math.floor(t/3600)),String(Math.floor(t/60)%60),String(t%60)].map(n=>n.padStart(2,'0')).join(':')};
 function status(t,c='st-wait'){$('sSt').textContent=t;$('sSt').className=c;$('bRetry').hidden=c!=='st-err'}
 function notice(t){$('analysisNotice').textContent=t}
 function renderAll(){renderStats();renderEggStatuses();renderLog();drawTL()}
-function resetResults(){tracks=[];events=[];current=[];nextId=1;renderAll();draw()}
+function resetResults(){tracks=[];events=[];current=[];trayGroups=[];nextId=1;renderAll();draw()}
 function loadGithubVideo(){V.pause();resetResults();V.src='eggs.mp4';V.load();notice(apiKey?'جاهز — شغّل الفيديو لبدء فحص الشقوق.':'أدخل مفتاح Roboflow من الإعدادات لتفعيل كشف الشقوق.')}
 function syncTime(){const d=Number.isFinite(V.duration)?V.duration:0,t=V.currentTime||0;$('tm').textContent=fmt(t)+' / '+fmt(d);$('seek').value=d?Math.min(1000,t/d*1000):0;drawTL()}
 function fitVideoFrame(){if(!V.videoWidth)return;stage.style.aspectRatio=V.videoWidth+'/'+V.videoHeight;stage.style.maxHeight=matchMedia('(max-width:560px)').matches?'42vh':matchMedia('(max-width:1100px)').matches?'48vh':'min(52vh,560px)';draw()}
@@ -330,6 +330,27 @@ $('bFull').onclick=()=>{const w=$('win');if(document.fullscreenElement)document.
 window.addEventListener('resize',fitVideoFrame);
 function iou(a,b){const x=Math.max(a[0],b[0]),y=Math.max(a[1],b[1]),xx=Math.min(a[0]+a[2],b[0]+b[2]),yy=Math.min(a[1]+a[3],b[1]+b[3]),i=Math.max(0,xx-x)*Math.max(0,yy-y);return i/(a[2]*a[3]+b[2]*b[3]-i||1)}
 function addEvent(t,k){events.push({t,id:k.id,cls:k.cls,confidence:k.confidence});events.sort((a,b)=>a.t-b.t)}
+function buildTrayGroups(items){
+ const groups=[],limit=Math.min(V.videoWidth||640,V.videoHeight||480)*.17;
+ for(const item of items){
+  const b=item.box,cx=b[0]+b[2]/2,cy=b[1]+b[3]/2;
+  let target=null,best=Infinity;
+  for(const g of groups){
+   const dx=cx-g.cx,dy=cy-g.cy,dist=Math.hypot(dx,dy);
+   const near=dist<=limit || iou(b,g.box)>.015;
+   if(near&&dist<best){best=dist;target=g}
+  }
+  if(!target){target={items:[],box:[...b],cx,cy};groups.push(target)}
+  else{
+   const x=Math.min(target.box[0],b[0]),y=Math.min(target.box[1],b[1]);
+   const xx=Math.max(target.box[0]+target.box[2],b[0]+b[2]),yy=Math.max(target.box[1]+target.box[3],b[1]+b[3]);
+   target.box=[x,y,xx-x,yy-y];
+   target.cx=target.box[0]+target.box[2]/2;target.cy=target.box[1]+target.box[3]/2;
+  }
+  target.items.push(item);
+ }
+ return groups.map((g,i)=>({...g,id:i+1,eggCount:g.items.length,confidence:Math.max(...g.items.map(x=>x.confidence||0))}));
+}
 function updateTracks(preds,t,sx,sy){
  const used=new Set(),fresh=[];
  for(const p of preds){const box=[(p.x-p.width/2)*sx,(p.y-p.height/2)*sy,p.width*sx,p.height*sy];let best=null,bi=.12;
@@ -337,7 +358,8 @@ function updateTracks(preds,t,sx,sy){
   if(!best){best={id:nextId++,first:t,last:t,hits:0,box,cls:p.class||'بيض متشقق',confidence:p.confidence||0};tracks.push(best);addEvent(t,best)}
   used.add(best);Object.assign(best,{box,last:t,hits:best.hits+1,confidence:Math.max(best.confidence,p.confidence||0),cls:p.class||best.cls});fresh.push({...best,box});
  }
- tracks=tracks.filter(k=>t-k.last<Math.max(18,S.interval/1000*4));current=fresh;renderAll();draw();
+ tracks=tracks.filter(k=>t-k.last<Math.max(18,S.interval/1000*4));
+ current=fresh;trayGroups=buildTrayGroups(fresh);renderAll();draw();
 }
 async function analyzeFrame(){
  if(!apiKey||busy||V.paused||V.ended||V.readyState<2||!V.videoWidth)return;
@@ -355,11 +377,12 @@ function draw(){
  const w=C.clientWidth,h=C.clientHeight,d=devicePixelRatio||1;if(!w||!h)return;if(C.width!==Math.round(w*d)||C.height!==Math.round(h*d)){C.width=Math.round(w*d);C.height=Math.round(h*d)}
  X.setTransform(d,0,0,d,0,0);X.clearRect(0,0,w,h);if(!V.videoWidth)return;
  const sc=Math.min(w/V.videoWidth,h/V.videoHeight),ox=(w-V.videoWidth*sc)/2,oy=(h-V.videoHeight*sc)/2;
+ for(const g of trayGroups){const [x,y,bw,bh]=g.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label='مجموعة مشتبه بها · '+g.eggCount+' شق';X.save();X.strokeStyle='#f59e0b';X.lineWidth=3;X.setLineDash([7,4]);X.strokeRect(px-5,py-5,ww+10,hh+10);X.setLineDash([]);X.font='700 11px Cairo,sans-serif';const tw=Math.min(Math.max(110,X.measureText(label).width+16),Math.max(110,w));const tx=Math.max(0,Math.min(px,w-tw)),ty=Math.max(0,Math.min(py-25,h-22));X.fillStyle='#a85b00';X.beginPath();X.roundRect(tx,ty,tw,20,5);X.fill();X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(label,tx+tw/2,ty+10);X.restore()}
  for(const p of current){const [x,y,bw,bh]=p.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label='شق محتمل '+Math.round(p.confidence*100)+'%';X.save();X.strokeStyle='#ff354f';X.lineWidth=2.5;X.strokeRect(px,py,ww,hh);X.font='700 11px Cairo,sans-serif';const tw=Math.min(Math.max(88,X.measureText(label).width+16),Math.max(88,ww)),tx=Math.max(0,Math.min(px,w-tw)),ty=Math.max(0,Math.min(py,h-22));X.fillStyle='#c91f39';X.beginPath();X.roundRect(tx,ty,tw,20,5);X.fill();X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(label,tx+tw/2,ty+10);X.restore()}
 }
-function renderEggStatuses(){const list=$('eggStatusList'),a=tracks.slice().sort((x,y)=>y.last-x.last).slice(0,20);$('eggGroupCount').textContent=a.length+' رصد';if(!a.length){list.innerHTML='<p class="muted">لا توجد شقوق مرصودة بعد. شغّل الفيديو مع تفعيل مفتاح النموذج.</p>';return}list.innerHTML=a.map(k=>'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px;border:1px solid var(--line);border-right:4px solid #ff354f;border-radius:9px;background:var(--navy2)"><b>بيضة مشتبه بها #'+k.id+'</b><span style="color:#ff354f;font-weight:800">شق محتمل · '+Math.round(k.confidence*100)+'%</span><small class="muted">آخر رصد '+fmt(k.last)+' · تكرار '+k.hits+'</small></div>').join('')}
+function renderEggStatuses(){const list=$('eggStatusList');$('eggGroupCount').textContent=trayGroups.length+' مجموعة حالياً';if(!trayGroups.length){list.innerHTML='<p class="muted">لا توجد مجموعات بها شقوق مرصودة في اللقطة الحالية. عدم الرصد لا يعني سلامة الصواني.</p>';return}list.innerHTML=trayGroups.map(g=>'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px;border:1px solid var(--line);border-right:4px solid #f59e0b;border-radius:9px;background:var(--navy2)"><b>مجموعة مشتبه بها #'+g.id+'</b><span style="color:#b66a00;font-weight:800">تحتاج فحص · '+g.eggCount+' مواضع شق</span><small class="muted">أعلى ثقة '+Math.round(g.confidence*100)+'%</small></div>').join('')}
 function renderLog(){const l=$('log');if(!events.length){l.innerHTML='<p class="muted">لا توجد حالات مرصودة حتى الآن.</p>';return}l.innerHTML='';events.slice(-80).reverse().forEach(e=>{const b=document.createElement('button');b.className='ev';b.innerHTML='<span class="sw" style="background:#ff354f"></span><span>شق محتمل في بيضة #'+e.id+' ('+Math.round(e.confidence*100)+'%)</span><span class="t">'+fmt(e.t)+'</span>';b.onclick=()=>V.currentTime=e.t;l.appendChild(b)})}
-function renderStats(){const brown=tracks.filter(k=>/brown/i.test(k.cls)).length,white=tracks.filter(k=>/white/i.test(k.cls)).length,active=tracks.filter(k=>V.currentTime-k.last<Math.max(12,S.interval/1000*3)).length;$('cT').textContent=tracks.length;$('cP').textContent=brown;$('cV').textContent=white;$('cA').textContent=active;$('sTot').textContent=tracks.length;$('dnT').textContent=tracks.length||'—';$('dn').style.background=tracks.length?'conic-gradient(#ff354f 0 100%)':'conic-gradient(var(--line) 0 100%)';$('leg').innerHTML='<p><span class="sw" style="background:#ff354f"></span><span>شقوق محتملة</span><span>'+tracks.length+'</span></p><p><span class="sw" style="background:var(--line)"></span><span>بيض غير مصنف</span><span>غير متاح</span></p>';$('sum').textContent=tracks.length?'رُصدت '+tracks.length+' بيضة مشتبه بها. يلزم فحص بصري للتأكيد.':'لم تُسجّل شقوق محتملة بعد. عدم الرصد لا يعني أن البيض سليم.'}
+function renderStats(){const brown=tracks.filter(k=>/brown/i.test(k.cls)).length,white=tracks.filter(k=>/white/i.test(k.cls)).length,active=tracks.filter(k=>V.currentTime-k.last<Math.max(12,S.interval/1000*3)).length;$('cT').textContent=tracks.length;$('cP').textContent=brown;$('cV').textContent=white;$('cA').textContent=active;$('sTot').textContent=tracks.length;$('dnT').textContent=trayGroups.length||'—';$('dn').style.background=trayGroups.length?'conic-gradient(#f59e0b 0 100%)':'conic-gradient(var(--line) 0 100%)';$('leg').innerHTML='<p><span class="sw" style="background:#f59e0b"></span><span>مجموعات بها شقوق مرصودة</span><span>'+trayGroups.length+'</span></p><p><span class="sw" style="background:#ff354f"></span><span>مواضع شق مرصودة</span><span>'+current.length+'</span></p>';$('sum').textContent=trayGroups.length?'رُصدت '+trayGroups.length+' مجموعات مشتبه بها في اللقطة الحالية. هذا تجميع تقريبي لمواضع الشقوق وليس كشفاً مستقلاً للصواني.':'لم تُرصد مجموعات مشتبه بها في اللقطة الحالية. عدم الرصد لا يثبت سلامة البيض.'}
 function renderAll(){renderStats();renderEggStatuses();renderLog();drawTL()}
 function drawTL(){const c=$('tl'),w=c.clientWidth,h=c.clientHeight,d=devicePixelRatio||1;if(!w)return;if(c.width!==Math.round(w*d)||c.height!==Math.round(h*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);g.clearRect(0,0,w,h);g.fillStyle='#142849';g.fillRect(0,0,w,h);const dur=Number.isFinite(V.duration)?V.duration:0;if(!dur)return;g.strokeStyle='#ff354f';g.lineWidth=2;events.forEach(e=>{const x=w-e.t/dur*w;g.beginPath();g.moveTo(x,8);g.lineTo(x,h-16);g.stroke()});g.fillStyle='#22d3ee';g.fillRect(w-V.currentTime/dur*w-1,0,2,h-14);g.fillStyle='#7f93b8';g.font='11px Cairo,sans-serif';g.fillText('00:00:00',w-52,h-2);g.fillText(fmt(dur),2,h-2)}
 $('tl').onclick=e=>{if(V.duration){const r=e.currentTarget.getBoundingClientRect();V.currentTime=(1-(e.clientX-r.left)/r.width)*V.duration}};
