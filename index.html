@@ -380,7 +380,9 @@ function findTrays(d,w,h,G){
       if(on[c]){n++;x0=Math.min(x0,cx);x1=Math.max(x1,cx);y0=Math.min(y0,cy);y1=Math.max(y1,cy);H+=sh[c];S+=ss[c];V+=sv[c];pc+=cnt[c]}
       for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const X=cx+dx,Y=cy+dy;if(X>=0&&Y>=0&&X<gw&&Y<gh){const q=Y*gw+X;if(dil[q]&&!seen[q]){seen[q]=1;st.push(q)}}}}
     if(n<25)continue;
-    out.push({bbox:[x0*G,y0*G,(x1-x0+1)*G,(y1-y0+1)*G],cells:n,h:H/pc,s:S/pc,v:V/pc});
+    const bw=(x1-x0+1)*G,bh=(y1-y0+1)*G,area=bw*bh,ratio=bw/bh;
+    if(area>w*h*.18||ratio<.30||ratio>3.2||bw>w*.72||bh>h*.72)continue;
+    out.push({bbox:[x0*G,y0*G,bw,bh],cells:n,h:H/pc,s:S/pc,v:V/pc});
   }
   return out;
 }
@@ -461,9 +463,11 @@ function draw(){
     const c=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'#94a3b8':k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],[x,y,bw,bh]=k.b,px=ox+x*sc,py=oy+y*sc;
     X.strokeStyle=c;X.lineWidth=2;X.strokeRect(px,py,bw*sc,bh*sc);
     if($('tTrail').checked&&k.tr&&k.tr.length>1){X.beginPath();k.tr.forEach((q,i)=>{const a=ox+q[0]*sc,b=oy+q[1]*sc;i?X.lineTo(a,b):X.moveTo(a,b)});X.globalAlpha=.7;X.stroke();X.globalAlpha=1}
-    const label=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'حالة لون البيض: بيانات غير كافية':k.sus>.5?'حالة لون البيض: انحراف لوني':'حالة لون البيض: قريب من المتوسط'):`${ar(k.cls)} ${(k.s*100).toFixed(1)}%`,tw=X.measureText(label).width+12,tagY=Math.min(py+3,Math.max(0,h-22));
-    X.fillStyle=c;X.fillRect(px,tagY,Math.min(tw,Math.max(40,w-px)),20);
-    X.fillStyle='#02060e';X.fillText(label,px+6,tagY+10);
+    const label=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'غير كافٍ':k.sus>.5?'فحص اللون':'قريب'):`${ar(k.cls)} ${(k.s*100).toFixed(0)}%`;
+    const tagW=Math.min(Math.max(48,X.measureText(label).width+14),Math.max(48,bw*sc-4),Math.max(48,w-px));
+    const tagH=18,tagX=Math.max(0,Math.min(px+2,w-tagW)),tagY=Math.max(0,Math.min(py+2,h-tagH));
+    X.save();X.globalAlpha=.92;X.fillStyle=c;X.beginPath();X.roundRect(tagX,tagY,tagW,tagH,5);X.fill();
+    X.globalAlpha=1;X.fillStyle='#fff';X.font='700 10px Cairo,sans-serif';X.textAlign='center';X.fillText(label,tagX+tagW/2,tagY+tagH/2);X.restore();X.textAlign='start';X.font='600 12px Cairo,sans-serif';
   }
 }
 new ResizeObserver(draw).observe(st);
