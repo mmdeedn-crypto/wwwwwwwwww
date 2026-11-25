@@ -32,16 +32,16 @@ nav .priv{margin-top:8px;font-size:12px;color:var(--mut);border-top:1px solid va
 .panel h2{font-size:16px;margin-bottom:10px;font-weight:800}
 main{display:flex;flex-direction:column;gap:14px;min-width:0}
 .stage-col{min-height:560px;position:relative}
-.win{position:relative;display:flex;flex-direction:column;width:100%;height:560px;min-width:300px;min-height:340px;max-width:100%;overflow:hidden;resize:both;border:1px solid var(--cyan);border-radius:14px;background:var(--navy);box-shadow:0 0 28px #22d3ee22;z-index:3}
-.win:fullscreen{resize:none;border-radius:0;height:100%}
+.win{position:relative;display:flex;flex-direction:column;width:100%;height:auto;min-width:300px;min-height:0;max-width:100%;overflow:hidden;resize:both;border:1px solid var(--cyan);border-radius:14px;background:var(--navy);box-shadow:0 0 28px #22d3ee22;z-index:3}
+.win:fullscreen{resize:none;border-radius:0;height:100%;overflow:auto}.win:fullscreen .stage{max-height:calc(100vh - 112px);flex:0 0 auto}
 .wh{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:grab;touch-action:none;user-select:none;background:#1e366a;border-bottom:1px solid var(--line)}
 .wh span{flex:1;font-weight:800}
 .wh .hint{font-weight:400;font-size:12px;color:var(--mut);flex:none}
 .ib{background:none;border:1px solid var(--line);border-radius:8px;width:34px;height:34px;display:grid;place-items:center}
 .ib:hover{border-color:var(--cyan)}
-.stage{position:relative;flex:1;min-height:0;background:#000}
+.stage{position:relative;flex:0 0 auto;width:100%;height:auto;aspect-ratio:16/9;min-height:180px;max-height:72vh;background:#000;overflow:hidden}
 .stage video,.stage canvas{position:absolute;inset:0;width:100%;height:100%}
-.stage video{object-fit:contain}
+.stage video{object-fit:contain;object-position:center;background:#000}
 .stage canvas{pointer-events:none}
 .empty{position:absolute;inset:0;display:grid;place-content:center;gap:12px;text-align:center;padding:20px;color:var(--mut)}
 .empty.drag{background:#22d3ee14}
@@ -80,7 +80,7 @@ dialog{background:var(--navy);color:var(--tx);border:1px solid var(--cyan);borde
 dialog::backdrop{background:#000a}
 dialog label{display:block;margin:12px 0 4px;font-size:14px}
 dialog input[type=range],dialog select{width:100%;accent-color:var(--red);background:var(--navy2);border:1px solid var(--line);border-radius:8px;padding:6px}
-@media(max-width:1100px){.app{grid-template-columns:minmax(0,1fr)}nav{flex-direction:row;flex-wrap:wrap}nav .priv{display:none}nav button{flex:1;justify-content:center}.tag,.dev{display:none}.bar{grid-template-columns:1fr 1fr}.win{height:420px}.stage-col{min-height:420px}}
+@media(max-width:1100px){.app{grid-template-columns:minmax(0,1fr)}nav{flex-direction:row;flex-wrap:wrap}nav .priv{display:none}nav button{flex:1;justify-content:center}.tag,.dev{display:none}.bar{grid-template-columns:1fr 1fr}.stage-col{min-height:0}.stage{max-height:65vh}}
 @media(max-width:560px){.brand h1{font-size:20px}.chips{grid-template-columns:1fr 1fr}.bar strong{font-size:20px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
@@ -319,6 +319,10 @@ addEventListener('pagehide',freeVideo);
 function refreshVideoMeta(){if(Number.isFinite(V.duration)&&V.duration>0)$('sDur').textContent=fmt(V.duration);syncTime()}
 V.onloadedmetadata=()=>{$('empty').hidden=true;refreshVideoMeta();if(model)status('جاهز للتحليل','st-ok')};
 V.ondurationchange=refreshVideoMeta;
+function fitVideoFrame(){if(!V.videoWidth||!V.videoHeight)return;const st=$('stage');st.style.aspectRatio=V.videoWidth+'/'+V.videoHeight;st.style.maxHeight=window.matchMedia('(max-width:1100px)').matches?'65vh':'72vh';draw()}
+V.addEventListener('loadedmetadata',fitVideoFrame);
+V.addEventListener('resize',fitVideoFrame);
+window.addEventListener('resize',fitVideoFrame);
 V.onerror=()=>{$('empty').hidden=false;$('msg').textContent='تعذّر تشغيل هذا الفيديو. جرّب صيغة MP4 أو WebM.';status('خطأ في الفيديو','st-err');freeVideo()};
 ['bPick','bPick2'].forEach(i=>$(i).onclick=()=>$('file').click());
 $('bSample').onclick=()=>{vname='eggs.mp4';freeVideo();resetResults();V.src='eggs.mp4';V.load();$('msg').textContent=''};
