@@ -289,7 +289,7 @@ body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-them
 
 <dialog id="dSet"><h2>إعدادات التحليل</h2>
   <label>حد الثقة الأدنى: <b id="thV">50%</b></label><input type="range" id="thr" min="30" max="90" value="50">
-  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="800">كل 800 مللي ثانية (سريع)</option><option value="1500" selected>كل 1.5 ثانية (متوازن)</option><option value="2500">كل 2.5 ثانية (أخف على الجهاز)</option></select>
+  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="1500">كل 1.5 ثانية (أسرع)</option><option value="2500" selected>كل 2.5 ثانية (متوازن)</option><option value="4000">كل 4 ثوانٍ (أخف على الجهاز)</option></select>
   <p class="muted" style="margin-top:10px">تُطبَّق التغييرات فوراً على الفحوصات القادمة.</p>
   <button class="btn blue" style="margin-top:14px" onclick="this.closest('dialog').close()">تم</button></dialog>
 <dialog id="dAbout"><h2>ALEX GUARD AI</h2>
@@ -307,7 +307,7 @@ const AR={egg_tray:'صينية بيض',person:'عامل/شخص',car:'سيارة'
 const CAT={person:'p',egg_tray:'e'};'car truck bus motorcycle bicycle airplane train boat'.split(' ').forEach(k=>CAT[k]='v');'bird cat dog horse sheep cow elephant bear zebra giraffe'.split(' ').forEach(k=>CAT[k]='a');
 const COL={e:'#fbbf24',p:'#ff2d4d',v:'#22d3ee',a:'#34d399',o:'#fbbf24'},CN={e:'صواني بيض',p:'عمال/أشخاص',v:'مركبات',a:'حيوانات',o:'أشياء أخرى'};
 const cat=k=>CAT[k]||'o',ar=k=>AR[k]||k;
-const S={thr:.5,itv:1500};
+const S={thr:.5,itv:2500};
 const series=new Map(),heat=new Float32Array(2304);let vname='';
 let model=null,busy=false,last=0,lastDraw=0,url=null,tracks=[],done=[],events=[],nid=1;
 
@@ -403,9 +403,9 @@ function update(dets,t){
     for(const k of tracks){if(used.has(k)||k.cls!==d.class)continue;const i=iou(k.b,d.bbox);if(i>bi){bi=i;best=k}}
     if(!best){best={id:nid++,cls:d.class,first:t,hits:0,ok:false,b:d.bbox};tracks.push(best)}
     used.add(best);best.b=best.b.map((v,i)=>v*.5+d.bbox[i]*.5);best.s=d.score;best.last=t;best.hits++;trackFx(best);if(d.sus===null){if(best.sus===undefined)best.sus=null}else{best.sus=best.sus===undefined||best.sus===null?(d.sus?1:0):best.sus*.7+(d.sus?.3:0)}
-    if(!best.ok&&best.hits>=3){best.ok=true;done.push(best);addEv(best.first,'ظهور',best)}
+    if(!best.ok&&best.hits>=2){best.ok=true;done.push(best);addEv(best.first,'ظهور',best)}
   }
-  tracks=tracks.filter(k=>{if(t-k.last>1.5){if(k.ok)addEv(k.last,'اختفاء',k);return false}return true});
+  tracks=tracks.filter(k=>{if(t-k.last>Math.max(5,S.itv/1000*2)){if(k.ok)addEv(k.last,'اختفاء',k);return false}return true});
   sample(t);renderStats();renderEggStatuses();drawTL();
 }
 function closeAll(t){tracks.forEach(k=>{if(k.ok)addEv(Math.max(k.last,Math.min(t,k.last+1.5)),'اختفاء',k)});tracks=[];renderStats()}
@@ -457,7 +457,7 @@ function draw(){
   if($('tHeat').checked){let m=0;for(const v of heat)m=Math.max(m,v);if(m){const cw=vw*sc/48,ch=vh*sc/48;for(let i=0;i<2304;i++)if(heat[i]){X.fillStyle=`rgba(255,45,77,${Math.min(.65,heat[i]/m*.65)})`;X.fillRect(ox+(i%48)*cw,oy+(i/48|0)*ch,cw+1,ch+1)}}}
   X.font='600 12px Cairo,sans-serif';X.textBaseline='middle';
   for(const k of tracks.slice(-12)){
-    if(!k.ok||t-k.last>.8)continue;
+    if(!k.ok||t-k.last>Math.max(5,S.itv/1000*2))continue;
     const c=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'#94a3b8':k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],[x,y,bw,bh]=k.b,px=ox+x*sc,py=oy+y*sc;
     X.strokeStyle=c;X.lineWidth=2;X.strokeRect(px,py,bw*sc,bh*sc);
     if($('tTrail').checked&&k.tr&&k.tr.length>1){X.beginPath();k.tr.forEach((q,i)=>{const a=ox+q[0]*sc,b=oy+q[1]*sc;i?X.lineTo(a,b):X.moveTo(a,b)});X.globalAlpha=.7;X.stroke();X.globalAlpha=1}
@@ -511,7 +511,7 @@ function trackFx(k){
   const cx=k.b[0]+k.b[2]/2;(k.tr=k.tr||[]).push([cx,k.b[1]+k.b[3]/2]);if(k.tr.length>40)k.tr.shift();
   if(k.ok&&V.videoWidth){const gx=Math.max(0,Math.min(47,cx/V.videoWidth*48|0)),gy=Math.max(0,Math.min(47,(k.b[1]+k.b[3])/V.videoHeight*48|0));heat[gy*48+gx]++}
 }
-function sample(t){const c={p:0,e:0,v:0,a:0,o:0};tracks.forEach(k=>{if(k.ok&&t-k.last<.6)c[cat(k.cls)]++});series.set(Math.floor(t*2),c)}
+function sample(t){const c={p:0,e:0,v:0,a:0,o:0};tracks.forEach(k=>{if(k.ok&&t-k.last<Math.max(4,S.itv/1000*1.8))c[cat(k.cls)]++});series.set(Math.floor(t*2),c)}
 function drawTL(){
   const c=$('tl'),w=c.clientWidth,h=c.clientHeight,d=devicePixelRatio||1;if(!w)return;
   if(c.width!==Math.round(w*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}
@@ -527,7 +527,7 @@ addEventListener('resize',drawTL);
 $('bShot').onclick=()=>{
   if(!V.videoWidth)return;const o=document.createElement('canvas');o.width=V.videoWidth;o.height=V.videoHeight;
   const g=o.getContext('2d'),t=V.currentTime;g.drawImage(V,0,0);g.font='600 '+Math.max(14,o.width/40)+'px Cairo,sans-serif';
-  tracks.forEach(k=>{if(!k.ok||t-k.last>.6)return;const c=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'#94a3b8':k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],L=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'مقارنة غير كافية':k.sus>.5?'انحراف لوني':'لون قريب من المتوسط'):ar(k.cls)+' '+(k.s*100|0)+'%',fs=Math.max(14,o.width/40);
+  tracks.forEach(k=>{if(!k.ok||t-k.last>Math.max(5,S.itv/1000*2))return;const c=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'#94a3b8':k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],L=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'مقارنة غير كافية':k.sus>.5?'انحراف لوني':'لون قريب من المتوسط'):ar(k.cls)+' '+(k.s*100|0)+'%',fs=Math.max(14,o.width/40);
     g.strokeStyle=c;g.lineWidth=Math.max(2,o.width/300);g.strokeRect(...k.b);g.fillStyle=c;g.fillRect(k.b[0],k.b[1]-fs-6,g.measureText(L).width+10,fs+6);g.fillStyle='#02060e';g.fillText(L,k.b[0]+5,k.b[1]-8)});
   o.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='alex-guard-'+fmt(t).replace(/:/g,'-')+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
 };
