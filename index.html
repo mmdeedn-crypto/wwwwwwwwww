@@ -285,7 +285,7 @@ body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-them
 
 <dialog id="dSet"><h2>إعدادات التحليل</h2>
   <label>حد الثقة الأدنى: <b id="thV">50%</b></label><input type="range" id="thr" min="30" max="90" value="50">
-  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="350" selected>كل 350 مللي ثانية (متوازن)</option><option value="600">كل 600 مللي ثانية (أخف على الهاتف)</option><option value="900">كل 900 مللي ثانية (أخف جداً)</option></select>
+  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="350">كل 350 مللي ثانية (سريع)</option><option value="600">كل 600 مللي ثانية (متوازن)</option><option value="900" selected>كل 900 مللي ثانية (أنسب للهاتف)</option></select>
   <p class="muted" style="margin-top:10px">تُطبَّق التغييرات فوراً على الفحوصات القادمة.</p>
   <button class="btn blue" style="margin-top:14px" onclick="this.closest('dialog').close()">تم</button></dialog>
 <dialog id="dAbout"><h2>ALEX GUARD AI</h2>
@@ -302,9 +302,9 @@ const AR={egg_tray:'صينية بيض',person:'عامل/شخص',car:'سيارة'
 const CAT={person:'p',egg_tray:'e'};'car truck bus motorcycle bicycle airplane train boat'.split(' ').forEach(k=>CAT[k]='v');'bird cat dog horse sheep cow elephant bear zebra giraffe'.split(' ').forEach(k=>CAT[k]='a');
 const COL={e:'#fbbf24',p:'#ff2d4d',v:'#22d3ee',a:'#34d399',o:'#fbbf24'},CN={e:'صواني بيض',p:'عمال/أشخاص',v:'مركبات',a:'حيوانات',o:'أشياء أخرى'};
 const cat=k=>CAT[k]||'o',ar=k=>AR[k]||k;
-const S={thr:.5,itv:350};
+const S={thr:.5,itv:900};
 const series=new Map(),heat=new Float32Array(2304);let vname='';
-let model=null,busy=false,last=0,url=null,tracks=[],done=[],events=[],nid=1;
+let model=null,busy=false,last=0,lastDraw=0,url=null,tracks=[],done=[],events=[],nid=1;
 
 const fmt=t=>{t=Number(t);if(!Number.isFinite(t)||t<0)return '00:00:00';t=Math.floor(t);return[String(Math.floor(t/3600)),String(Math.floor(t/60)%60),String(t%60)].map(n=>n.padStart(2,'0')).join(':')};
 function status(txt,cls){const e=$('sSt');e.textContent=txt;e.className=cls;$('bRetry').hidden=cls!=='st-err'}
@@ -462,10 +462,10 @@ function draw(){
 new ResizeObserver(draw).observe(st);
 
 async function tick(now){
-  draw();
+  if(now-lastDraw>=100){draw();lastDraw=now;}
   if(model&&!busy&&!V.paused&&!V.ended&&V.readyState>=2&&now-last>=S.itv){
     busy=true;
-    try{const t=V.currentTime,dets=(await model.detect(V,12,S.thr)).concat(zoneDets());if(!V.paused)update(dets,t)}
+    try{const t=V.currentTime,dets=(await model.detect(V,5,S.thr)).concat(zoneDets());if(!V.paused)update(dets,t)}
     catch(e){status('خطأ أثناء التحليل','st-err')}
     busy=false;last=performance.now();
   }
