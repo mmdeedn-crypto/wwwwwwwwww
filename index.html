@@ -164,9 +164,8 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
       <button class="ib" id="bShot" title="لقطة مع المربعات">📷</button>
       <button class="ib" id="bFull" title="ملء الشاشة">⛶</button></div>
     <div class="stage" id="stage">
-      <video id="v" playsinline preload="metadata"></video>
+      <video id="v" playsinline preload="auto"></video>
       <canvas id="c"></canvas>
-      <div class="empty" id="empty"><div style="font-size:40px">🎞️</div><div>جارٍ تجهيز فيديو المعاينة الموجود على GitHub…</div><div class="muted" id="msg"></div></div>
     </div>
     <div class="ctl">
       <button class="btn blue" id="bPlay">▶ تشغيل</button>
@@ -322,18 +321,18 @@ $('bRetry').onclick=loadModel;
 /* ---------- الفيديو ---------- */
 function loadGithubVideo(){
   V.pause();resetResults();vname='eggs.mp4';V.src='eggs.mp4';V.load();
-  $('empty').hidden=false;$('msg').textContent='جارٍ تحميل فيديو المعاينة من GitHub…';
+  $('msg').textContent='';
 }
 function freeVideo(){if(url){V.pause();V.removeAttribute('src');V.load();URL.revokeObjectURL(url);url=null}}
 addEventListener('pagehide',freeVideo);
 function refreshVideoMeta(){if(Number.isFinite(V.duration)&&V.duration>0)$('sDur').textContent=fmt(V.duration);syncTime()}
-V.onloadedmetadata=()=>{$('empty').hidden=true;$('msg').textContent='';refreshVideoMeta();if(model)status('جاهز للتحليل','st-ok')};
+V.onloadedmetadata=()=>{$('msg').textContent='';refreshVideoMeta();if(model)status('جاهز للتحليل','st-ok')};
 V.ondurationchange=refreshVideoMeta;
 function fitVideoFrame(){if(!V.videoWidth||!V.videoHeight)return;const st=$('stage');st.style.aspectRatio=V.videoWidth+'/'+V.videoHeight;st.style.maxHeight='none';draw()}
 V.addEventListener('loadedmetadata',fitVideoFrame);
 V.addEventListener('resize',fitVideoFrame);
 window.addEventListener('resize',fitVideoFrame);
-V.onerror=()=>{$('empty').hidden=false;$('msg').textContent='تعذّر تحميل فيديو eggs.mp4 من GitHub.';status('خطأ في الفيديو','st-err')};
+V.onerror=()=>{status('تعذّر تحميل فيديو GitHub','st-err')};
 $('bGithub').onclick=loadGithubVideo;
 $('bPlay').onclick=()=>{if(!V.src){loadGithubVideo();V.addEventListener('loadedmetadata',()=>V.play(),{once:true});return}V.paused?V.play():V.pause()};
 $('bRe').onclick=()=>{if(!V.src)return;resetResults();V.currentTime=0;V.play()};
