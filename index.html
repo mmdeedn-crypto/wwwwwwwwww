@@ -292,7 +292,7 @@ body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-them
 
 <dialog id="dSet"><h2>إعدادات التحليل</h2>
   <label>حد الثقة الأدنى: <b id="thV">50%</b></label><input type="range" id="thr" min="30" max="90" value="50">
-  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="4000">كل 4 ثوانٍ</option><option value="6000">كل 6 ثوانٍ</option><option value="10000">كل 10 ثوانٍ</option><option value="20000" selected>كل 20 ثانية (أخف على الفيديو)</option><option value="30000">كل 30 ثانية</option></select>
+  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="4000">كل 4 ثوانٍ</option><option value="6000">كل 6 ثوانٍ</option><option value="10000">كل 10 ثوانٍ</option><option value="20000">كل 20 ثانية</option><option value="30000" selected>كل 30 ثانية (أخف على الجهاز)</option><option value="45000">كل 45 ثانية</option></select>
   <label>مفتاح Roboflow API</label><input id="rfKey" type="password" autocomplete="off" placeholder="ألصق المفتاح هنا" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--navy2);color:var(--tx)">
   <p class="muted" style="margin-top:8px;line-height:1.8">المفتاح يُحفظ على هذا الجهاز فقط. عند تفعيل التحليل تُرسل لقطات من الفيديو إلى Roboflow لفحص الشقوق. النموذج يرصد الشقوق المحتملة فقط ولا يثبت سلامة البيض.</p>
   <button class="btn blue" id="saveKey" style="margin-top:10px">حفظ وتفعيل الكشف</button>
@@ -305,7 +305,7 @@ body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-them
 <script>
 const $=s=>document.getElementById(s);
 const V=$('v'),C=$('c'),X=C.getContext('2d'),stage=$('stage'),capCanvas=document.createElement('canvas'),cap=capCanvas.getContext('2d');
-const S={interval:20000,confidence:55},MODEL='egg-crack-detection-eu65a/1';
+const S={interval:30000,confidence:60},MODEL='egg-crack-detection-eu65a/1';
 let apiKey='',busy=false,lastScan=0,tracks=[],events=[],nextId=1,current=[],trayGroups=[],lastDetectionVideoTime=-999;
 const fmt=t=>{t=Number(t);if(!Number.isFinite(t)||t<0)return'00:00:00';t=Math.floor(t);return[String(Math.floor(t/3600)),String(Math.floor(t/60)%60),String(t%60)].map(n=>n.padStart(2,'0')).join(':')};
 function status(t,c='st-wait'){$('sSt').textContent=t;$('sSt').className=c;$('bRetry').hidden=c!=='st-err'}
@@ -366,9 +366,9 @@ async function analyzeFrame(){
  if(!apiKey||busy||V.paused||V.ended||V.readyState<2||!V.videoWidth)return;
  busy=true;lastScan=performance.now();
  try{
-  const w=Math.min(384,V.videoWidth),h=Math.max(1,Math.round(w*V.videoHeight/V.videoWidth));
+  const w=Math.min(256,V.videoWidth),h=Math.max(1,Math.round(w*V.videoHeight/V.videoWidth));
   capCanvas.width=w;capCanvas.height=h;cap.drawImage(V,0,0,w,h);
-  const blob=await new Promise(resolve=>capCanvas.toBlob(resolve,'image/jpeg',.48));
+  const blob=await new Promise(resolve=>capCanvas.toBlob(resolve,'image/jpeg',.4));
   if(!blob)throw Error('تعذّر تجهيز صورة الفحص');
   const url='https://detect.roboflow.com/'+MODEL+'?api_key='+encodeURIComponent(apiKey)+'&confidence='+Math.max(55,S.confidence)+'&overlap=25';
   const form=new FormData();form.append('file',blob,'frame.jpg');
@@ -383,7 +383,7 @@ async function analyzeFrame(){
  finally{busy=false}
 }
 function draw(){
- const w=C.clientWidth,h=C.clientHeight,d=devicePixelRatio||1;if(!w||!h)return;if(C.width!==Math.round(w*d)||C.height!==Math.round(h*d)){C.width=Math.round(w*d);C.height=Math.round(h*d)}
+ const w=C.clientWidth,h=C.clientHeight,d=Math.min(1.15,devicePixelRatio||1);if(!w||!h)return;if(C.width!==Math.round(w*d)||C.height!==Math.round(h*d)){C.width=Math.round(w*d);C.height=Math.round(h*d)}
  X.setTransform(d,0,0,d,0,0);X.clearRect(0,0,w,h);if(!V.videoWidth)return;
  const sc=Math.min(w/V.videoWidth,h/V.videoHeight),ox=(w-V.videoWidth*sc)/2,oy=(h-V.videoHeight*sc)/2;
  for(const g of trayGroups){const [x,y,bw,bh]=g.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label='مجموعة مشتبه بها · '+g.eggCount+' شق';X.save();X.strokeStyle='#f59e0b';X.lineWidth=3;X.setLineDash([7,4]);X.strokeRect(px-5,py-5,ww+10,hh+10);X.setLineDash([]);X.font='700 11px Cairo,sans-serif';const tw=Math.min(Math.max(110,X.measureText(label).width+16),Math.max(110,w));const tx=Math.max(0,Math.min(px,w-tw)),ty=Math.max(0,Math.min(py-25,h-22));X.fillStyle='#a85b00';X.beginPath();X.roundRect(tx,ty,tw,20,5);X.fill();X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(label,tx+tw/2,ty+10);X.restore()}
@@ -408,7 +408,8 @@ try{apiKey=localStorage.getItem('alex-guard-rf-key')||''}catch(e){}$('rfKey').va
 function setTheme(name){const names=['blue-yellow','purple-orange','black-red','green-black','navy-cyan','pink-purple','burgundy-gold','teal-coral','sky-light','mint-light','lavender-light','rose-light','peach-light','lemon-light'];if(!names.includes(name))name='blue-yellow';document.body.dataset.theme=name;try{localStorage.setItem('alex-guard-theme',name)}catch(e){}document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('active',b.dataset.themeChoice===name))}
 let savedTheme='blue-yellow';try{savedTheme=localStorage.getItem('alex-guard-theme')||savedTheme}catch(e){}setTheme(savedTheme);$('themeOpen').onclick=()=>$('dTheme').showModal();$('themeClose').onclick=()=>$('dTheme').close();document.querySelectorAll('[data-theme-choice]').forEach(b=>b.onclick=()=>setTheme(b.dataset.themeChoice));
 let lastOverlayDraw=0;
-function tick(now){if(V.currentTime-lastDetectionVideoTime>1.25&&current.length){current=[];trayGroups=[];renderAll()}if(now-lastOverlayDraw>=50){draw();lastOverlayDraw=now}if(apiKey&&!V.paused&&!V.ended&&V.readyState>=2&&!busy&&now-lastScan>=S.interval)analyzeFrame();requestAnimationFrame(tick)}
+let lastExpiryCheck=0;
+function tick(now){if(now-lastExpiryCheck>=250){if(V.currentTime-lastDetectionVideoTime>1.25&&current.length){current=[];trayGroups=[];renderAll()}lastExpiryCheck=now}if(now-lastOverlayDraw>=125){draw();lastOverlayDraw=now}if(apiKey&&!V.paused&&!V.ended&&V.readyState>=2&&!busy&&now-lastScan>=S.interval)analyzeFrame();requestAnimationFrame(tick)}
 requestAnimationFrame(tick);status(apiKey?'المفتاح محفوظ — جاهز':'بانتظار مفتاح Roboflow',apiKey?'st-ok':'st-wait');loadGithubVideo();
 </script>
 </body>
