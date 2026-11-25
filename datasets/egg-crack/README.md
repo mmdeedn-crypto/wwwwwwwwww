@@ -1,34 +1,33 @@
-# ALEX GUARD AI — Egg crack reference data
+# ALEX GUARD AI — Egg crack detection
 
-## Current status
+## Website integration
 
-This folder documents the public datasets selected for the egg-shell crack detection work. The website currently displays two cited visual references in its "مكتبة الصور المرجعية" panel. The image files are still served by their original publishers; they have **not** been copied into this repository, and this reference gallery is **not a trained classifier**.
+The website now uses the Roboflow hosted model:
 
-## Candidate public dataset
+- Model endpoint: `egg-crack-detection-eu65a/1`
+- Model page: https://universe.roboflow.com/innodatatics-yyp09/egg-crack-detection-eu65a
+- Output classes: `Brown cracked eggs` and `White cracked eggs`
+- The browser sends sampled video frames to Roboflow only after the user enters an API key in Settings.
+- The key is stored in the browser's local storage and is not committed to this repository.
+- Inference runs asynchronously on sampled frames so it does not intentionally pause HTML video playback.
+- The UI labels detections as "شق محتمل" (possible crack), not as a confirmed broken egg.
 
-- **Egg Crack Detection Dataset (360digitmg)**
-- 978 images; four labels: Cracked Egg Brown, Cracked Egg White, Normal Egg Brown, Normal Egg White.
-- License shown on the dataset page: Public Domain.
-- Source: https://universe.roboflow.com/360digitmg-swnfx/egg-crack-detection-yjhsy
+## Important limitations
 
-## Additional RGB crack dataset
+1. This hosted model only reports cracked-egg classes. It does not classify every egg as intact or broken.
+2. No detection in a frame is **not** proof that all eggs are intact.
+3. The model was trained by a third party. Its reported metrics are not a guarantee of accuracy on this conveyor video, camera, lighting, distance, or egg type.
+4. Validate it with representative footage from the actual production line before relying on it for quality control.
+5. Video frames are sent to Roboflow for inference when the API key is configured. Do not enable cloud inference for confidential footage unless that transfer is acceptable.
 
-- **Dataset for real-time crack detection on chicken eggs** (Datta et al., 2019)
-- 840 annotated smartphone images; 740 train and 100 test images.
-- Source: https://figshare.com/articles/dataset/Dataset_for_real-time_crack_detection_on_chicken_eggs/21568425
-- Dataset description and image capture details: https://pmc.ncbi.nlm.nih.gov/articles/PMC11762189/
+## Reference datasets and images
 
-## Important engineering notes
+- **360digitmg Egg Crack Detection Dataset** — 978 images with four classes: cracked brown, cracked white, normal brown, and normal white. License shown on the dataset page: Public Domain.  
+  https://universe.roboflow.com/360digitmg-swnfx/egg-crack-detection-yjhsy
+- **Innodatatics EGG CRACKS DETECTION** — public dataset and hosted model page. Dataset license shown as CC BY 4.0.  
+  https://universe.roboflow.com/innodatatics-09dbx/egg-cracks-detection
+- **Datta et al. (2019)** — 840 annotated RGB images for crack detection, described in the poultry computer-vision dataset survey.  
+  https://figshare.com/articles/dataset/Dataset_for_real-time_crack_detection_on_chicken_eggs/21568425
+  https://pmc.ncbi.nlm.nih.gov/articles/PMC11762189/
 
-1. Do not infer cracked/healthy status from tray color or average hue.
-2. Train and validate an image model using the dataset's actual annotations and split. Do not use test images for training.
-3. The production camera should capture close, sharp views of each eggshell. A wide conveyor frame with tiny eggs is not equivalent to the dataset's close-up images.
-4. Until trained weights are bundled and inference is implemented, the UI must describe the gallery as visual references only and must not display "healthy" or "cracked" AI predictions.
-5. Any eventual model must be evaluated on held-out images from the same target camera/lighting setup before operational use.
-
-## Image attribution used by the website
-
-- Springer Nature, Figure 13 from "A cost-effective prototype for egg crack detection and labeling with a comprehensive review of existing methods" (2025), CC BY-NC-ND 4.0. The figure is embedded unchanged and linked to the source article: https://link.springer.com/article/10.1007/s44187-025-00604-2
-- Roboflow Universe, Egg Crack Detection image by Lakshmi Kaviti. Source page: https://universe.roboflow.com/lakshmi-kaviti-xyhms/egg-crack-detection-k65q0
-
-The website currently loads these two sample images from their original hosts. They are not stored as local image assets in this repository yet.
+The website's reference gallery displays example images from Roboflow image hosts. These gallery images are illustrative; they are not loaded into or used to train the hosted model by this website.
