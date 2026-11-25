@@ -383,13 +383,67 @@ async function analyzeFrame(){
  finally{busy=false}
 }
 function draw(){
- const w=C.clientWidth,h=C.clientHeight,d=Math.min(1.15,devicePixelRatio||1);if(!w||!h)return;if(C.width!==Math.round(w*d)||C.height!==Math.round(h*d)){C.width=Math.round(w*d);C.height=Math.round(h*d)}
- X.setTransform(d,0,0,d,0,0);X.clearRect(0,0,w,h);if(!V.videoWidth)return;
+ const w=C.clientWidth,h=C.clientHeight,d=Math.min(1.15,devicePixelRatio||1);
+ if(!w||!h)return;
+ if(C.width!==Math.round(w*d)||C.height!==Math.round(h*d)){C.width=Math.round(w*d);C.height=Math.round(h*d)}
+ X.setTransform(d,0,0,d,0,0);X.clearRect(0,0,w,h);
+ if(!V.videoWidth)return;
  const sc=Math.min(w/V.videoWidth,h/V.videoHeight),ox=(w-V.videoWidth*sc)/2,oy=(h-V.videoHeight*sc)/2;
- for(const g of trayGroups){const [x,y,bw,bh]=g.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label='مجموعة مشتبه بها · '+g.eggCount+' شق';X.save();X.strokeStyle='#f59e0b';X.lineWidth=3;X.setLineDash([7,4]);X.strokeRect(px-5,py-5,ww+10,hh+10);X.setLineDash([]);X.font='700 11px Cairo,sans-serif';const tw=Math.min(Math.max(110,X.measureText(label).width+16),Math.max(110,w));const tx=Math.max(0,Math.min(px,w-tw)),ty=Math.max(0,Math.min(py-25,h-22));X.fillStyle='#a85b00';X.beginPath();X.roundRect(tx,ty,tw,20,5);X.fill();X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(label,tx+tw/2,ty+10);X.restore()}
+ const placed=[];
+ const overlaps=(a,b,pad=5)=>!(a.x+a.w+pad<=b.x||b.x+b.w+pad<=a.x||a.y+a.h+pad<=b.y||b.y+b.h+pad<=a.y);
+ const clamp=(v,min,max)=>Math.max(min,Math.min(v,max));
+ // ارسم حدود المجموعات أولاً حتى تبقى واضحة خلف تسميات البيض
+ for(const g of trayGroups){
+  const [x,y,bw,bh]=g.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label='مجموعة مشتبه بها · '+g.eggCount+' شق';
+  X.save();X.strokeStyle='#f59e0b';X.lineWidth=3;X.setLineDash([7,4]);X.strokeRect(px-5,py-5,ww+10,hh+10);X.setLineDash([]);
+  X.font='700 11px Cairo,sans-serif';
+  const tw=Math.min(Math.max(110,X.measureText(label).width+16),Math.max(110,w-8));
+  let tx=clamp(px,w-tw-4),ty=clamp(py-25,4,h-24);
+  const box={x:tx,y:ty,w:tw,h:20};
+  X.fillStyle='#a85b00';X.beginPath();X.roundRect(tx,ty,tw,20,5);X.fill();
+  X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(label,tx+tw/2,ty+10,tw-10);X.restore();
+  placed.push(box);
+ }
  const funnyCracks=['يمعود آني هنا مكسورة 😂','لا تدوسون عليّ ترى مشروخة 😅','يمّه انكشف أمري!','هاي مو خدشة.. هاي كسرة 😂','طلعوني من خط الإنتاج!','تره تعبانة هاي القشرة 😭','لا تخلّوني ويا السليمات 😂'];
- for(const p of current){const [x,y,bw,bh]=p.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label=funnyCracks[(p.id-1)%funnyCracks.length];X.save();X.strokeStyle='#ff354f';X.lineWidth=2.5;X.strokeRect(px,py,ww,hh);X.font='700 11px Cairo,sans-serif';X.direction='rtl';const tw=Math.min(190,Math.max(112,X.measureText(label).width+16)),tx=Math.max(4,Math.min(px+ww/2-tw/2,w-tw-4)),above=py>=31,ty=above?py-29:Math.min(h-25,py+hh+7),anchorX=Math.max(tx+10,Math.min(px+ww/2,tx+tw-10)),anchorY=above?ty+23:ty;X.strokeStyle='#ff6b75';X.lineWidth=1.8;X.beginPath();X.moveTo(anchorX,anchorY);X.lineTo(Math.max(0,Math.min(w,px+ww/2)),above?py:py+hh);X.stroke();X.fillStyle='#c91f39';X.beginPath();X.roundRect(tx,ty,tw,23,7);X.fill();X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(label,tx+tw/2,ty+11.5,tw-10);X.restore()}
- if(V.currentTime>=3&&V.currentTime<=7){const msg='الله يساعدك خالي 😂';X.save();X.direction='rtl';X.font='800 17px Cairo,sans-serif';const tw=Math.min(w-24,Math.max(150,X.measureText(msg).width+30)),tx=(w-tw)/2,ty=12;X.fillStyle='rgba(15,31,58,.94)';X.strokeStyle='#55d6c2';X.lineWidth=1.5;X.beginPath();X.roundRect(tx,ty,tw,34,10);X.fill();X.stroke();X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(msg,tx+tw/2,ty+17,tw-16);X.restore()}
+ // كل عبارة ترتبط بصندوقها، ونختار أقرب موضع خالٍ لتجنب تداخل العبارات
+ for(const p of current){
+  const [x,y,bw,bh]=p.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label=funnyCracks[(p.id-1)%funnyCracks.length];
+  X.save();X.font='700 11px Cairo,sans-serif';X.direction='rtl';
+  const tw=Math.min(Math.max(112,X.measureText(label).width+18),Math.max(112,w-8)),th=25;
+  const cx=px+ww/2,cy=py+hh/2,gap=8;
+  const candidates=[
+   {x:cx-tw/2,y:py-th-gap,side:'top'},
+   {x:cx-tw/2,y:py+hh+gap,side:'bottom'},
+   {x:px-tw-gap,y:cy-th/2,side:'left'},
+   {x:px+ww+gap,y:cy-th/2,side:'right'},
+   {x:cx-tw/2,y:py-th-gap-31,side:'top'},
+   {x:cx-tw/2,y:py+hh+gap+31,side:'bottom'}
+  ].map(a=>({...a,x:clamp(a.x,4,w-tw-4),y:clamp(a.y,4,h-th-4)}));
+  let chosen=null,best=Infinity;
+  for(const a of candidates){
+   const rect={x:a.x,y:a.y,w:tw,h:th};
+   const collision=placed.reduce((n,b)=>n+(overlaps(rect,b)?1:0),0);
+   const dist=Math.hypot(a.x+tw/2-cx,a.y+th/2-cy);
+   const score=collision*100000+dist;
+   if(score<best){best=score;chosen={...a,rect}}
+   if(collision===0&&dist<85)break;
+  }
+  if(!chosen)chosen=candidates[0]&&{...candidates[0],rect:{x:candidates[0].x,y:candidates[0].y,w:tw,h:th}};
+  const tx=chosen.x,ty=chosen.y,anchorX=clamp(cx,tx+10,tx+tw-10);
+  const anchorY=chosen.side==='top'?ty+th:chosen.side==='bottom'?ty:clamp(cy,ty+5,ty+th-5);
+  const targetX=chosen.side==='left'?px:chosen.side==='right'?px+ww:cx;
+  const targetY=chosen.side==='top'?py:chosen.side==='bottom'?py+hh:cy;
+  X.strokeStyle='#ff6b75';X.lineWidth=1.8;X.beginPath();X.moveTo(anchorX,anchorY);X.lineTo(clamp(targetX,0,w),clamp(targetY,0,h));X.stroke();
+  X.fillStyle='#c91f39';X.beginPath();X.roundRect(tx,ty,tw,th,7);X.fill();
+  X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(label,tx+tw/2,ty+th/2,tw-10);
+  X.restore();placed.push(chosen.rect);
+ }
+ if(V.currentTime>=3&&V.currentTime<=7){
+  const msg='الله يساعدك خالي 😂';X.save();X.direction='rtl';X.font='800 17px Cairo,sans-serif';
+  const tw=Math.min(w-24,Math.max(150,X.measureText(msg).width+30)),tx=(w-tw)/2,ty=12;
+  X.fillStyle='rgba(15,31,58,.94)';X.strokeStyle='#55d6c2';X.lineWidth=1.5;X.beginPath();X.roundRect(tx,ty,tw,34,10);X.fill();X.stroke();
+  X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(msg,tx+tw/2,ty+17,tw-16);X.restore();
+ }
 }
 function renderEggStatuses(){const list=$('eggStatusList');$('eggGroupCount').textContent=trayGroups.length+' مجموعة حالياً';if(!trayGroups.length){list.innerHTML='<p class="muted">لا توجد مجموعات بها شقوق مرصودة في اللقطة الحالية. عدم الرصد لا يعني سلامة الصواني.</p>';return}list.innerHTML=trayGroups.map(g=>'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px;border:1px solid var(--line);border-right:4px solid #f59e0b;border-radius:9px;background:var(--navy2)"><b>مجموعة مشتبه بها #'+g.id+'</b><span style="color:#b66a00;font-weight:800">تحتاج فحص · '+g.eggCount+' مواضع شق</span><small class="muted">أعلى ثقة '+Math.round(g.confidence*100)+'%</small></div>').join('')}
 function renderLog(){const l=$('log');if(!events.length){l.innerHTML='<p class="muted">لا توجد حالات مرصودة حتى الآن.</p>';return}l.innerHTML='';events.slice(-80).reverse().forEach(e=>{const b=document.createElement('button');b.className='ev';b.innerHTML='<span class="sw" style="background:#ff354f"></span><span>شق محتمل في بيضة #'+e.id+' ('+Math.round(e.confidence*100)+'%)</span><span class="t">'+fmt(e.t)+'</span>';b.onclick=()=>V.currentTime=e.t;l.appendChild(b)})}
