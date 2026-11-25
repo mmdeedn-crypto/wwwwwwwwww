@@ -167,7 +167,7 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
       <select id="spd" aria-label="سرعة التشغيل"><option value=".5">0.5x</option><option value="1" selected>1.0x</option><option value="1.5">1.5x</option><option value="2">2x</option></select>
       <label class="muted"><input type="checkbox" id="tTrail" checked> المسارات</label><label class="muted"><input type="checkbox" id="tHeat"> خريطة الحرارة</label>
     </div>
-    <div class="muted" style="padding:6px 12px;background:var(--navy);border-top:1px solid var(--line);font-size:12px">🟩 صينية سليمة لونياً · 🟥 صينية مشتبهة (انحراف لوني عن المتوسط). تحليل لوني تقريبي وليس كشف كسر مؤكداً.</div>
+    <div class="muted" style="padding:6px 12px;background:var(--navy);border-top:1px solid var(--line);font-size:12px">🟩 لون قريب من بقية الصواني · 🟥 انحراف لوني يحتاج فحص · ⬜ مقارنة غير كافية. هذا فحص لوني تقريبي وليس كشفاً مؤكداً للكسر.</div>
   </section>
   </div>
   <section class="panel"><div class="lh" style="flex-wrap:wrap;gap:6px"><h2>المخطط الزمني للعناصر</h2><span class="muted">اضغط للانتقال · <b style="color:#ff2d4d">أشخاص</b> <b style="color:#22d3ee">مركبات</b> <b style="color:#34d399">حيوانات</b> <b style="color:#fbbf24">أخرى</b></span></div><canvas id="tl" style="width:100%;height:120px;display:block;cursor:pointer;border-radius:8px"></canvas></section>
@@ -179,8 +179,8 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
     <div class="chips">
       <div class="chip"><b id="cT" style="color:var(--amber)">0</b><i>عناصر كلياً</i></div>
       <div class="chip"><b id="cP" style="color:var(--red)">0</b><i>عمال</i></div>
-      <div class="chip"><b id="cV" style="color:#22c55e">0</b><i>صواني سليمة</i></div>
-      <div class="chip"><b id="cA" style="color:#ff2d4d">0</b><i>صواني مشتبهة</i></div>
+      <div class="chip"><b id="cV" style="color:#22c55e">0</b><i>لون قريب من المتوسط</i></div>
+      <div class="chip"><b id="cA" style="color:#ff2d4d">0</b><i>انحراف لوني</i></div>
     </div>
     <div class="donutwrap"><div class="donut" id="dn"><div id="dnT">—</div></div>
       <div class="leg" id="leg"></div></div>
@@ -259,7 +259,7 @@ body[data-theme] .ctl input[type=range],body[data-theme] dialog input[type=range
   <button class="btn blue" style="margin-top:14px" onclick="this.closest('dialog').close()">تم</button></dialog>
 <dialog id="dAbout"><h2>ALEX GUARD AI</h2>
   <p style="line-height:1.9;margin-top:8px">منصة لتحليل الفيديو فقط. يكتشف النموذج الأشخاص والمركبات والحيوانات والأشياء التي يدعمها COCO-SSD، ويتتبعها بين الإطارات، ويسجّل ظهورها واختفاءها حسب توقيت الفيديو.</p>
-  <p class="muted" style="margin-top:8px">التتبع تقريبي (مطابقة المربعات بين الإطارات) وقد يعدّ العنصر ظهوراً جديداً إذا غاب أكثر من ثانية ونصف. صواني البيض تُكتشف بتحليل اللون، وتُلوَّن «مشتبهة» (أحمر) إذا انحرف لونها عن متوسط الصواني في الإطار، و«سليمة لونياً» (أخضر) غير ذلك؛ وهذا ليس كشف كسر مؤكداً؛ وكشف العمال يتم بنموذج COCO-SSD. لا يوجد كشف لعيوب البيض أو الصواني. المطوّر: Ali Al-Mamoori</p>
+  <p class="muted" style="margin-top:8px">التتبع تقريبي (مطابقة المربعات بين الإطارات) وقد يعدّ العنصر ظهوراً جديداً إذا غاب أكثر من ثانية ونصف. صواني البيض تُقارن لونياً بوسيط ألوان الصواني في الإطار؛ الانحراف في أي اتجاه يظهر بالأحمر، واللون القريب من الوسيط بالأخضر، وتظهر المقارنة غير الكافية بالرمادي. هذا ليس كشف كسر مؤكداً؛ وكشف العمال يتم بنموذج COCO-SSD. لا يوجد كشف لعيوب البيض أو الصواني. المطوّر: Ali Al-Mamoori</p>
   <button class="btn blue" style="margin-top:14px" onclick="this.closest('dialog').close()">إغلاق</button></dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
@@ -359,7 +359,7 @@ function zoneDets(){
   ZC.width=288;ZC.height=Math.round(288*vh/vw);ZX.drawImage(V,0,0,ZC.width,ZC.height);
   const k=vw/288,cs=findTrays(ZX.getImageData(0,0,ZC.width,ZC.height).data,ZC.width,ZC.height,3);
   const hs=cs.map(c=>c.h).sort((a,b)=>a-b),ref=hs.length>=3?hs[hs.length>>1]:16.5;
-  return cs.map(c=>({class:'egg_tray',score:1,sus:c.h-ref>=1.5,bbox:c.bbox.map(v=>v*k)}));
+  return cs.map(c=>({class:'egg_tray',score:1,sus:hs.length>=3?Math.abs(c.h-ref)>=2.5:null,bbox:c.bbox.map(v=>v*k)}));
 }
 /* ---------- التتبع ---------- */
 function iou(a,b){const x=Math.max(a[0],b[0]),y=Math.max(a[1],b[1]),X2=Math.min(a[0]+a[2],b[0]+b[2]),Y2=Math.min(a[1]+a[3],b[1]+b[3]);const i=Math.max(0,X2-x)*Math.max(0,Y2-y);return i/(a[2]*a[3]+b[2]*b[3]-i||1)}
@@ -371,7 +371,7 @@ function update(dets,t){
     let best=null,bi=.2;
     for(const k of tracks){if(used.has(k)||k.cls!==d.class)continue;const i=iou(k.b,d.bbox);if(i>bi){bi=i;best=k}}
     if(!best){best={id:nid++,cls:d.class,first:t,hits:0,ok:false,b:d.bbox};tracks.push(best)}
-    used.add(best);best.b=best.b.map((v,i)=>v*.5+d.bbox[i]*.5);best.s=d.score;best.last=t;best.hits++;trackFx(best);best.sus=best.sus===undefined?(d.sus?1:0):best.sus*.7+(d.sus?.3:0);
+    used.add(best);best.b=best.b.map((v,i)=>v*.5+d.bbox[i]*.5);best.s=d.score;best.last=t;best.hits++;trackFx(best);if(d.sus===null){if(best.sus===undefined)best.sus=null}else{best.sus=best.sus===undefined||best.sus===null?(d.sus?1:0):best.sus*.7+(d.sus?.3:0)}
     if(!best.ok&&best.hits>=3){best.ok=true;done.push(best);addEv(best.first,'ظهور',best)}
   }
   tracks=tracks.filter(k=>{if(t-k.last>1.5){if(k.ok)addEv(k.last,'اختفاء',k);return false}return true});
@@ -394,7 +394,7 @@ function renderStats(){
   const n={p:0,e:0,v:0,a:0,o:0},kinds={};
   done.forEach(k=>{n[cat(k.cls)]++;kinds[k.cls]=(kinds[k.cls]||0)+1});
   const tot=done.length;
-  $('cT').textContent=tot;$('cP').textContent=n.p;const bad=done.filter(k=>k.cls==='egg_tray'&&k.sus>.5).length;$('cV').textContent=n.e-bad;$('cA').textContent=bad;$('sTot').textContent=tot;
+  $('cT').textContent=tot;$('cP').textContent=n.p;const bad=done.filter(k=>k.cls==='egg_tray'&&k.sus>.5).length,unknown=done.filter(k=>k.cls==='egg_tray'&&(k.sus===null||k.sus===undefined)).length;$('cV').textContent=n.e-bad-unknown;$('cA').textContent=bad;$('sTot').textContent=tot;
   let acc=0,g=[];
   ['p','e','v','a','o'].forEach(c=>{if(n[c]){const s=acc/tot*100;acc+=n[c];g.push(`${COL[c]} ${s}% ${acc/tot*100}%`)}});
   $('dn').style.background=tot?`conic-gradient(${g.join(',')})`:'conic-gradient(var(--line) 0 100%)';
@@ -416,10 +416,10 @@ function draw(){
   X.font='600 12px Cairo,sans-serif';X.textBaseline='middle';
   for(const k of tracks.slice(-12)){
     if(!k.ok||t-k.last>.8)continue;
-    const c=k.cls==='egg_tray'?(k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],[x,y,bw,bh]=k.b,px=ox+x*sc,py=oy+y*sc;
+    const c=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'#94a3b8':k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],[x,y,bw,bh]=k.b,px=ox+x*sc,py=oy+y*sc;
     X.strokeStyle=c;X.lineWidth=2;X.strokeRect(px,py,bw*sc,bh*sc);
     if($('tTrail').checked&&k.tr&&k.tr.length>1){X.beginPath();k.tr.forEach((q,i)=>{const a=ox+q[0]*sc,b=oy+q[1]*sc;i?X.lineTo(a,b):X.moveTo(a,b)});X.globalAlpha=.7;X.stroke();X.globalAlpha=1}
-    const label=k.cls==='egg_tray'?(k.sus>.5?'مشتبه لونياً':'سليم لونياً'):`${ar(k.cls)} ${(k.s*100).toFixed(1)}%`,tw=X.measureText(label).width+12;
+    const label=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'مقارنة غير كافية':k.sus>.5?'انحراف لوني':'لون قريب من المتوسط'):`${ar(k.cls)} ${(k.s*100).toFixed(1)}%`,tw=X.measureText(label).width+12;
     X.fillStyle=c;X.fillRect(px,Math.max(0,py-20),tw,20);
     X.fillStyle='#02060e';X.fillText(label,px+6,Math.max(0,py-20)+10);
   }
@@ -497,7 +497,7 @@ addEventListener('resize',drawTL);
 $('bShot').onclick=()=>{
   if(!V.videoWidth)return;const o=document.createElement('canvas');o.width=V.videoWidth;o.height=V.videoHeight;
   const g=o.getContext('2d'),t=V.currentTime;g.drawImage(V,0,0);g.font='600 '+Math.max(14,o.width/40)+'px Cairo,sans-serif';
-  tracks.forEach(k=>{if(!k.ok||t-k.last>.6)return;const c=k.cls==='egg_tray'?(k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],L=k.cls==='egg_tray'?(k.sus>.5?'مشتبه لونياً':'سليم لونياً'):ar(k.cls)+' '+(k.s*100|0)+'%',fs=Math.max(14,o.width/40);
+  tracks.forEach(k=>{if(!k.ok||t-k.last>.6)return;const c=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'#94a3b8':k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],L=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'مقارنة غير كافية':k.sus>.5?'انحراف لوني':'لون قريب من المتوسط'):ar(k.cls)+' '+(k.s*100|0)+'%',fs=Math.max(14,o.width/40);
     g.strokeStyle=c;g.lineWidth=Math.max(2,o.width/300);g.strokeRect(...k.b);g.fillStyle=c;g.fillRect(k.b[0],k.b[1]-fs-6,g.measureText(L).width+10,fs+6);g.fillStyle='#02060e';g.fillText(L,k.b[0]+5,k.b[1]-8)});
   o.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='alex-guard-'+fmt(t).replace(/:/g,'-')+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
 };
