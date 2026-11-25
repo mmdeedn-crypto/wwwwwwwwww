@@ -160,13 +160,13 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
   <div class="stage-col" id="col">
   <section class="win" id="win" aria-label="نافذة الفيديو">
     <div class="wh" id="wh"><span>📹 نافذة الفيديو</span><em class="hint">اسحب لتحريك النافذة · اسحب الزاوية لتغيير الحجم</em>
-      <button class="ib" id="bPick" title="اختيار فيديو">📂</button>
+      <button class="ib" id="bGithub" title="إعادة تحميل فيديو GitHub">↻</button>
       <button class="ib" id="bShot" title="لقطة مع المربعات">📷</button>
       <button class="ib" id="bFull" title="ملء الشاشة">⛶</button></div>
     <div class="stage" id="stage">
       <video id="v" playsinline preload="metadata"></video>
       <canvas id="c"></canvas>
-      <div class="empty" id="empty"><div style="font-size:40px">🎞️</div><div>اختر فيديو من جهازك أو أفلته هنا لبدء التحليل</div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn red" id="bSample">تحميل فيديو خط الإنتاج</button><button class="btn blue" id="bPick2">اختيار فيديو من جهازك</button></div><div class="muted" id="msg"></div></div>
+      <div class="empty" id="empty"><div style="font-size:40px">🎞️</div><div>جارٍ تجهيز فيديو المعاينة الموجود على GitHub…</div><div class="muted" id="msg"></div></div>
     </div>
     <div class="ctl">
       <button class="btn blue" id="bPlay">▶ تشغيل</button>
@@ -189,7 +189,6 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
     <div class="muted" style="padding:8px 14px;font-size:11px">المصادر: <a href="https://link.springer.com/article/10.1007/s44187-025-00604-2" target="_blank" rel="noopener">بحث Springer Nature (2025)</a> · <a href="https://universe.roboflow.com/lakshmi-kaviti-xyhms/egg-crack-detection-k65q0" target="_blank" rel="noopener">مجموعة صور Roboflow</a></div>
   </section>
   <section class="panel"><div class="lh" style="flex-wrap:wrap;gap:6px"><h2>المخطط الزمني للعناصر</h2><span class="muted">اضغط للانتقال · <b style="color:#ff2d4d">أشخاص</b> <b style="color:#22d3ee">مركبات</b> <b style="color:#34d399">حيوانات</b> <b style="color:#fbbf24">أخرى</b></span></div><canvas id="tl" style="width:100%;height:120px;display:block;cursor:pointer;border-radius:8px"></canvas></section>
-  <input type="file" id="file" accept="video/*" hidden>
 </main>
 
 <aside style="display:flex;flex-direction:column;gap:14px;min-width:0">
@@ -321,31 +320,22 @@ async function loadModel(){
 $('bRetry').onclick=loadModel;
 
 /* ---------- الفيديو ---------- */
-function openFile(f){
-  if(!f)return;
-  if(!f.type.startsWith('video/')){$('msg').textContent='الملف المختار ليس فيديو.';return}
-  vname=f.name;freeVideo();resetResults();
-  url=URL.createObjectURL(f);V.src=url;V.load();$('msg').textContent='';
+function loadGithubVideo(){
+  V.pause();resetResults();vname='eggs.mp4';V.src='eggs.mp4';V.load();
+  $('empty').hidden=false;$('msg').textContent='جارٍ تحميل فيديو المعاينة من GitHub…';
 }
 function freeVideo(){if(url){V.pause();V.removeAttribute('src');V.load();URL.revokeObjectURL(url);url=null}}
 addEventListener('pagehide',freeVideo);
 function refreshVideoMeta(){if(Number.isFinite(V.duration)&&V.duration>0)$('sDur').textContent=fmt(V.duration);syncTime()}
-V.onloadedmetadata=()=>{$('empty').hidden=true;refreshVideoMeta();if(model)status('جاهز للتحليل','st-ok')};
+V.onloadedmetadata=()=>{$('empty').hidden=true;$('msg').textContent='';refreshVideoMeta();if(model)status('جاهز للتحليل','st-ok')};
 V.ondurationchange=refreshVideoMeta;
 function fitVideoFrame(){if(!V.videoWidth||!V.videoHeight)return;const st=$('stage');st.style.aspectRatio=V.videoWidth+'/'+V.videoHeight;st.style.maxHeight=window.matchMedia('(max-width:1100px)').matches?'65vh':'72vh';draw()}
 V.addEventListener('loadedmetadata',fitVideoFrame);
 V.addEventListener('resize',fitVideoFrame);
 window.addEventListener('resize',fitVideoFrame);
-V.onerror=()=>{$('empty').hidden=false;$('msg').textContent='تعذّر تشغيل هذا الفيديو. جرّب صيغة MP4 أو WebM.';status('خطأ في الفيديو','st-err');freeVideo()};
-['bPick','bPick2'].forEach(i=>$(i).onclick=()=>$('file').click());
-$('bSample').onclick=()=>{vname='eggs.mp4';freeVideo();resetResults();V.src='eggs.mp4';V.load();$('msg').textContent=''};
-$('file').onchange=e=>{openFile(e.target.files[0]);e.target.value=''};
-const st=$('stage');
-st.ondragover=e=>{e.preventDefault();$('empty').classList.add('drag')};
-st.ondragleave=()=>$('empty').classList.remove('drag');
-st.ondrop=e=>{e.preventDefault();$('empty').classList.remove('drag');openFile(e.dataTransfer.files[0])};
-
-$('bPlay').onclick=()=>{if(!V.src)return $('file').click();V.paused?V.play():V.pause()};
+V.onerror=()=>{$('empty').hidden=false;$('msg').textContent='تعذّر تحميل فيديو eggs.mp4 من GitHub.';status('خطأ في الفيديو','st-err')};
+$('bGithub').onclick=loadGithubVideo;
+$('bPlay').onclick=()=>{if(!V.src){loadGithubVideo();V.addEventListener('loadedmetadata',()=>V.play(),{once:true});return}V.paused?V.play():V.pause()};
 $('bRe').onclick=()=>{if(!V.src)return;resetResults();V.currentTime=0;V.play()};
 $('spd').onchange=e=>V.playbackRate=+e.target.value;
 $('seek').oninput=e=>{if(V.duration)V.currentTime=V.duration*e.target.value/1000};
@@ -533,6 +523,7 @@ $('bRep').onclick=()=>{
   w.document.close();setTimeout(()=>w.print(),500);
 };
 loadModel();
+loadGithubVideo();
 </script>
 </body>
 </html>
