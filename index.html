@@ -83,6 +83,48 @@ dialog input[type=range],dialog select{width:100%;accent-color:var(--red);backgr
 @media(max-width:1100px){.app{grid-template-columns:minmax(0,1fr)}nav{flex-direction:row;flex-wrap:wrap}nav .priv{display:none}nav button{flex:1;justify-content:center}.tag,.dev{display:none}.bar{grid-template-columns:1fr 1fr}.win{height:420px}.stage-col{min-height:420px}}
 @media(max-width:560px){.brand h1{font-size:20px}.chips{grid-template-columns:1fr 1fr}.bar strong{font-size:20px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== LIGHT TWO-TONE THEME: WHITE + SKY BLUE ===== */
+:root{
+ --bg:#eef6ff;--navy:#ffffff;--navy2:#e8f3ff;--line:#c9def2;
+ --red:#2878d0;--cyan:#159bb8;--green:#159b70;--amber:#c78a16;
+ --tx:#18324d;--mut:#607b96;
+}
+html,body{
+ background:linear-gradient(135deg,#f8fbff 0%,#e8f4ff 52%,#f4faff 100%);
+ color:var(--tx);
+}
+header{background:linear-gradient(100deg,#ffffff 0%,#e6f3ff 100%);box-shadow:0 8px 28px #527da51a}
+.brand h1 b{color:#2878d0}
+nav,.panel{background:linear-gradient(160deg,#ffffff 0%,#f0f7ff 100%);box-shadow:0 8px 24px #527da514}
+nav button{color:#294764}
+nav button.on{background:linear-gradient(100deg,#2878d0,#42a8d8);color:#fff;box-shadow:0 6px 18px #2878d033}
+nav button:hover{background:#e4f2ff}
+.win{background:#f7fbff;border-color:#8fc5ed;box-shadow:0 8px 26px #2878d01a}
+.wh{background:linear-gradient(90deg,#e4f2ff,#f4f9ff);color:#244563;border-color:#c9def2}
+.ib,.btn{background:#eaf4ff;color:#244563;border-color:#c9def2}
+.btn.red,.btn.blue{background:linear-gradient(100deg,#2878d0,#42a8d8);color:#fff;border-color:#2878d0}
+.btn:hover,.ib:hover{background:#dceeff;border-color:#72b2e3}
+.btn.red:hover,.btn.blue:hover{background:#1d69bd;color:#fff}
+.stage{background:#dceaf7}
+.ctl{background:#f0f7ff;border-color:#c9def2}
+.ctl select{background:#fff;color:#244563;border-color:#c9def2}
+.chip,.ev{background:#f0f7ff;border-color:#c9def2;color:#244563}
+.donut div{background:#fff;color:#18324d}
+.sum{color:#36536f;border-color:#d7e6f4}
+.muted,.bar small{color:#607b96}
+.bar .panel{background:linear-gradient(135deg,#fff,#edf6ff)}
+dialog{background:#fff;color:#18324d;border-color:#8fc5ed;box-shadow:0 18px 60px #315d842b}
+dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
+.priv{color:#607b96}
+.ev .t{color:#1689ad}
+.wh .hint{color:#607b96}
+.ctl input[type=range],dialog input[type=range]{accent-color:#2878d0}
+#tl{background:#e5f1fc;border:1px solid #c9def2}
+@media(prefers-color-scheme:dark){
+ html,body{color:var(--tx)}
+}
+
 </style>
 </head>
 <body>
