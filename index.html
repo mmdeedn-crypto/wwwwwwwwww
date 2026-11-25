@@ -198,51 +198,52 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
 </div>
 </div>
 
-<dialog id="dTheme" class="theme-dialog"><h2>🎨 اختر مظهر المنصة</h2>
-  <p class="muted">اختار مزج الألوان اللي يعجبك، ويتطبق على الموقع كله وينحفظ اختيارك.</p>
+<dialog id="dTheme" class="theme-dialog"><h2>🎨 اختار لونين فقط</h2>
+  <p class="muted">كل ثيم يعتمد على لون أساسي ولون ثانوي فقط، بدون إدخال الأبيض أو لون ثالث.</p>
   <div class="theme-grid">
-    <button class="theme-option" data-theme-choice="blue-yellow"><span class="swatches"><i style="background:#1769aa"></i><i style="background:#ffd43b"></i></span><b>أزرق + أصفر</b><small>حيوي وواضح</small></button>
-    <button class="theme-option" data-theme-choice="white-blue"><span class="swatches"><i style="background:#fff;border:1px solid #ccd"></i><i style="background:#2878d0"></i></span><b>أبيض + أزرق</b><small>نظيف واحترافي</small></button>
-    <button class="theme-option" data-theme-choice="white-gold"><span class="swatches"><i style="background:#fff;border:1px solid #ccd"></i><i style="background:#c99a35"></i></span><b>أبيض + ذهبي</b><small>هادئ وفخم</small></button>
-    <button class="theme-option" data-theme-choice="navy-cyan"><span class="swatches"><i style="background:#10243e"></i><i style="background:#20c9e8"></i></span><b>كحلي + سماوي</b><small>تقني عصري</small></button>
-    <button class="theme-option" data-theme-choice="black-yellow"><span class="swatches"><i style="background:#111"></i><i style="background:#f5cf32"></i></span><b>أسود + أصفر</b><small>تباين قوي</small></button>
+    <button class="theme-option" data-theme-choice="blue-yellow"><span class="swatches"><i style="background:#102a43"></i><i style="background:#f6c945"></i></span><b>أزرق + أصفر</b></button>
+    <button class="theme-option" data-theme-choice="purple-orange"><span class="swatches"><i style="background:#24113d"></i><i style="background:#ff9f1c"></i></span><b>بنفسجي + برتقالي</b></button>
+    <button class="theme-option" data-theme-choice="black-red"><span class="swatches"><i style="background:#111111"></i><i style="background:#f44336"></i></span><b>أسود + أحمر</b></button>
+    <button class="theme-option" data-theme-choice="green-black"><span class="swatches"><i style="background:#071f16"></i><i style="background:#31d17c"></i></span><b>أخضر + أسود</b></button>
+    <button class="theme-option" data-theme-choice="navy-cyan"><span class="swatches"><i style="background:#082b3a"></i><i style="background:#24d7e8"></i></span><b>كحلي + سماوي</b></button>
+    <button class="theme-option" data-theme-choice="pink-purple"><span class="swatches"><i style="background:#2a1038"></i><i style="background:#ff5cab"></i></span><b>بنفسجي + وردي</b></button>
+    <button class="theme-option" data-theme-choice="burgundy-gold"><span class="swatches"><i style="background:#3b101c"></i><i style="background:#f2c14e"></i></span><b>عنابي + ذهبي</b></button>
+    <button class="theme-option" data-theme-choice="teal-coral"><span class="swatches"><i style="background:#073b3a"></i><i style="background:#ff6b5e"></i></span><b>تركوازي + مرجاني</b></button>
   </div>
   <button class="btn blue" style="margin-top:16px" id="themeClose">إغلاق</button>
 </dialog>
 <style>
-.theme-dialog{max-width:520px}
+.theme-dialog{max-width:540px}
 .theme-dialog>p{margin:6px 0 14px}
 .theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.theme-option{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--navy2);color:var(--tx);text-align:right}
+.theme-option{display:flex;flex-direction:column;align-items:flex-start;gap:7px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--navy2);color:var(--tx);text-align:right}
 .theme-option.active{outline:2px solid var(--cyan);border-color:var(--cyan)}
-.theme-option small{color:var(--mut)}
-.swatches{display:flex;gap:6px;margin-bottom:3px}
-.swatches i{width:25px;height:25px;border-radius:50%;display:block}
+.swatches{display:flex;gap:6px}
+.swatches i{width:28px;height:28px;border-radius:50%;display:block}
 @media(max-width:520px){.theme-grid{grid-template-columns:1fr}}
-/* Theme palettes */
-body[data-theme="blue-yellow"]{--bg:#fff9df;--navy:#ffffff;--navy2:#fff1b8;--line:#e8d27a;--red:#1769aa;--cyan:#d49a00;--green:#23845b;--amber:#d49a00;--tx:#173653;--mut:#68778a;background:linear-gradient(135deg,#fffdf2,#fff2bd)}
-body[data-theme="blue-yellow"] header,body[data-theme="blue-yellow"] nav,body[data-theme="blue-yellow"] .panel{background:linear-gradient(135deg,#fff,#fff8dc)}
-body[data-theme="blue-yellow"] nav button.on,body[data-theme="blue-yellow"] .btn.red,body[data-theme="blue-yellow"] .btn.blue{background:linear-gradient(100deg,#1769aa,#2689c8);color:#fff;border-color:#1769aa}
-body[data-theme="blue-yellow"] .wh,body[data-theme="blue-yellow"] .ctl,body[data-theme="blue-yellow"] .chip,body[data-theme="blue-yellow"] .ev{background:#fff5cc;color:#173653}
-body[data-theme="blue-yellow"] .win{border-color:#d6a900}
-body[data-theme="white-blue"]{--bg:#eef6ff;--navy:#fff;--navy2:#e8f3ff;--line:#c9def2;--red:#2878d0;--cyan:#159bb8;--green:#159b70;--amber:#c78a16;--tx:#18324d;--mut:#607b96;background:linear-gradient(135deg,#f8fbff,#e8f4ff,#f4faff)}
-body[data-theme="white-gold"]{--bg:#faf7ef;--navy:#fff;--navy2:#f5efdf;--line:#e5d8b8;--red:#a77a25;--cyan:#c49a45;--green:#4f8b68;--amber:#b98525;--tx:#40351f;--mut:#82765d;background:linear-gradient(135deg,#fffdf8,#f4eddd)}
-body[data-theme="white-gold"] header,body[data-theme="white-gold"] nav,body[data-theme="white-gold"] .panel{background:linear-gradient(135deg,#fff,#f8f2e5)}
-body[data-theme="white-gold"] nav button.on,body[data-theme="white-gold"] .btn.red,body[data-theme="white-gold"] .btn.blue{background:linear-gradient(100deg,#a77a25,#d0ad62);color:#fff;border-color:#a77a25}
-body[data-theme="white-gold"] .wh,body[data-theme="white-gold"] .ctl,body[data-theme="white-gold"] .chip,body[data-theme="white-gold"] .ev{background:#f8f2e5;color:#40351f}
-body[data-theme="navy-cyan"]{--bg:#0d1c31;--navy:#142944;--navy2:#1c3858;--line:#315675;--red:#18b7d4;--cyan:#43e0ed;--green:#42c99a;--amber:#f4c64d;--tx:#effaff;--mut:#a7c4d7;background:radial-gradient(1000px 600px at 80% 0%,#164768,#0d1c31 70%)}
-body[data-theme="navy-cyan"] header,body[data-theme="navy-cyan"] nav,body[data-theme="navy-cyan"] .panel{background:linear-gradient(145deg,#173451,#10243c)}
-body[data-theme="navy-cyan"] nav button.on,body[data-theme="navy-cyan"] .btn.red,body[data-theme="navy-cyan"] .btn.blue{background:linear-gradient(100deg,#087f9e,#16b8d2);color:#fff;border-color:#18b7d4}
-body[data-theme="navy-cyan"] .wh,body[data-theme="navy-cyan"] .ctl,body[data-theme="navy-cyan"] .chip,body[data-theme="navy-cyan"] .ev{background:#1a3552;color:#effaff}
-body[data-theme="navy-cyan"] .donut div,body[data-theme="navy-cyan"] dialog{background:#142944;color:#effaff}
-body[data-theme="black-yellow"]{--bg:#101010;--navy:#191919;--navy2:#252525;--line:#514821;--red:#f5cf32;--cyan:#f5cf32;--green:#86c98b;--amber:#f5cf32;--tx:#fff9df;--mut:#c4bb91;background:linear-gradient(135deg,#090909,#242114)}
-body[data-theme="black-yellow"] header,body[data-theme="black-yellow"] nav,body[data-theme="black-yellow"] .panel{background:linear-gradient(145deg,#202020,#151515)}
-body[data-theme="black-yellow"] nav button.on,body[data-theme="black-yellow"] .btn.red,body[data-theme="black-yellow"] .btn.blue{background:linear-gradient(100deg,#d2a900,#f5cf32);color:#181818;border-color:#f5cf32}
-body[data-theme="black-yellow"] .wh,body[data-theme="black-yellow"] .ctl,body[data-theme="black-yellow"] .chip,body[data-theme="black-yellow"] .ev{background:#242424;color:#fff9df}
-body[data-theme="black-yellow"] .donut div,body[data-theme="black-yellow"] dialog{background:#191919;color:#fff9df}
-body[data-theme="blue-yellow"] .donut div,body[data-theme="white-blue"] .donut div,body[data-theme="white-gold"] .donut div{background:#fff}
-body[data-theme="blue-yellow"] .wh,body[data-theme="white-blue"] .wh,body[data-theme="white-gold"] .wh{color:var(--tx)}
-body[data-theme="navy-cyan"] .wh .hint,body[data-theme="black-yellow"] .wh .hint{color:var(--mut)}
+/* Strict two-color palettes: base + accent only */
+body[data-theme="blue-yellow"]{--bg:#102a43;--navy:#102a43;--navy2:#102a43;--line:#f6c945;--red:#f6c945;--cyan:#f6c945;--green:#f6c945;--amber:#f6c945;--tx:#f6c945;--mut:#f6c945;background:#102a43}
+body[data-theme="purple-orange"]{--bg:#24113d;--navy:#24113d;--navy2:#24113d;--line:#ff9f1c;--red:#ff9f1c;--cyan:#ff9f1c;--green:#ff9f1c;--amber:#ff9f1c;--tx:#ff9f1c;--mut:#ff9f1c;background:#24113d}
+body[data-theme="black-red"]{--bg:#111111;--navy:#111111;--navy2:#111111;--line:#f44336;--red:#f44336;--cyan:#f44336;--green:#f44336;--amber:#f44336;--tx:#f44336;--mut:#f44336;background:#111111}
+body[data-theme="green-black"]{--bg:#071f16;--navy:#071f16;--navy2:#071f16;--line:#31d17c;--red:#31d17c;--cyan:#31d17c;--green:#31d17c;--amber:#31d17c;--tx:#31d17c;--mut:#31d17c;background:#071f16}
+body[data-theme="navy-cyan"]{--bg:#082b3a;--navy:#082b3a;--navy2:#082b3a;--line:#24d7e8;--red:#24d7e8;--cyan:#24d7e8;--green:#24d7e8;--amber:#24d7e8;--tx:#24d7e8;--mut:#24d7e8;background:#082b3a}
+body[data-theme="pink-purple"]{--bg:#2a1038;--navy:#2a1038;--navy2:#2a1038;--line:#ff5cab;--red:#ff5cab;--cyan:#ff5cab;--green:#ff5cab;--amber:#ff5cab;--tx:#ff5cab;--mut:#ff5cab;background:#2a1038}
+body[data-theme="burgundy-gold"]{--bg:#3b101c;--navy:#3b101c;--navy2:#3b101c;--line:#f2c14e;--red:#f2c14e;--cyan:#f2c14e;--green:#f2c14e;--amber:#f2c14e;--tx:#f2c14e;--mut:#f2c14e;background:#3b101c}
+body[data-theme="teal-coral"]{--bg:#073b3a;--navy:#073b3a;--navy2:#073b3a;--line:#ff6b5e;--red:#ff6b5e;--cyan:#ff6b5e;--green:#ff6b5e;--amber:#ff6b5e;--tx:#ff6b5e;--mut:#ff6b5e;background:#073b3a}
+body[data-theme] header,body[data-theme] nav,body[data-theme] .panel,body[data-theme] .bar .panel{background:var(--bg);border-color:var(--line);box-shadow:none}
+body[data-theme] nav button{color:var(--tx)}
+body[data-theme] nav button.on,body[data-theme] .btn.red,body[data-theme] .btn.blue{background:var(--line);color:var(--bg);border-color:var(--line);box-shadow:none}
+body[data-theme] .btn,body[data-theme] .ib,body[data-theme] .chip,body[data-theme] .ev,body[data-theme] .wh,body[data-theme] .ctl,body[data-theme] .ctl select{background:var(--bg);color:var(--tx);border-color:var(--line)}
+body[data-theme] .stage{background:var(--bg)}
+body[data-theme] .win{background:var(--bg);border-color:var(--line);box-shadow:none}
+body[data-theme] .donut div,body[data-theme] dialog{background:var(--bg);color:var(--tx)}
+body[data-theme] .theme-option{background:var(--bg);color:var(--tx);border-color:var(--line)}
+body[data-theme] .theme-option.active{outline-color:var(--line)}
+body[data-theme] .sum,body[data-theme] .priv,body[data-theme] .muted,body[data-theme] .dev,body[data-theme] .wh .hint{color:var(--tx)}
+body[data-theme] .brand h1 b{color:var(--line)}
+body[data-theme] .dot{background:var(--line);box-shadow:0 0 10px var(--line)}
+body[data-theme] .ev .t{color:var(--line)}
+body[data-theme] .ctl input[type=range],body[data-theme] dialog input[type=range]{accent-color:var(--line)}
 </style>
 
 <dialog id="dSet"><h2>إعدادات التحليل</h2>
@@ -430,7 +431,7 @@ async function tick(now){
 requestAnimationFrame(tick);
 
 /* ---------- مبدّل ألوان الموقع ---------- */
-const themeNames=['blue-yellow','white-blue','white-gold','navy-cyan','black-yellow'];
+const themeNames=['blue-yellow','purple-orange','black-red','green-black','navy-cyan','pink-purple','burgundy-gold','teal-coral'];
 function setTheme(name){
   if(!themeNames.includes(name))name='blue-yellow';
   document.body.dataset.theme=name;
