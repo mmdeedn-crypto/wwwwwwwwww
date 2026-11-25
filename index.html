@@ -206,7 +206,7 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
   <section class="panel">
     <div class="lh"><h2>حالة مجموعات البيض</h2><span class="muted" id="eggGroupCount">0 مجموعة</span></div>
     <div id="eggStatusList" style="display:grid;gap:8px;padding:10px 0"><p class="muted">شغّل الفيديو لعرض حالة كل مجموعة يتم رصدها.</p></div>
-    <p class="muted" style="font-size:11px;line-height:1.7">الحالة مبنية على مقارنة لون الصواني الظاهرة ببعضها، وليست فحصاً مؤكداً لسلامة البيض أو اكتشاف الكسر.</p>
+    <p class="muted" style="font-size:11px;line-height:1.7">تنبيه: هذا الإصدار يحدد مواقع الصواني فقط. لا يستطيع تأكيد البيض المكسور أو السليم من دون نموذج مدرّب على صور الشقوق.</p>
   </section>
   <section class="panel"><div class="lh"><h2>سجل الأحداث</h2><span style="display:flex;gap:6px"><button class="btn" id="bRep" style="padding:5px 12px">تقرير PDF</button><button class="btn" id="bCsv" style="padding:5px 12px">CSV</button></span></div>
     <div id="log"><p class="muted">اضغط على حدث للانتقال إلى توقيته في الفيديو.</p></div></section>
@@ -289,7 +289,7 @@ body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-them
 
 <dialog id="dSet"><h2>إعدادات التحليل</h2>
   <label>حد الثقة الأدنى: <b id="thV">50%</b></label><input type="range" id="thr" min="30" max="90" value="50">
-  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="1500">كل 1.5 ثانية (أسرع)</option><option value="2500" selected>كل 2.5 ثانية (متوازن)</option><option value="4000">كل 4 ثوانٍ (أخف على الجهاز)</option></select>
+  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="4000">كل 4 ثوانٍ</option><option value="6000" selected>كل 6 ثوانٍ (أخف على الفيديو)</option><option value="10000">كل 10 ثوانٍ</option></select>
   <p class="muted" style="margin-top:10px">تُطبَّق التغييرات فوراً على الفحوصات القادمة.</p>
   <button class="btn blue" style="margin-top:14px" onclick="this.closest('dialog').close()">تم</button></dialog>
 <dialog id="dAbout"><h2>ALEX GUARD AI</h2>
@@ -307,7 +307,7 @@ const AR={egg_tray:'صينية بيض',person:'عامل/شخص',car:'سيارة'
 const CAT={person:'p',egg_tray:'e'};'car truck bus motorcycle bicycle airplane train boat'.split(' ').forEach(k=>CAT[k]='v');'bird cat dog horse sheep cow elephant bear zebra giraffe'.split(' ').forEach(k=>CAT[k]='a');
 const COL={e:'#fbbf24',p:'#ff2d4d',v:'#22d3ee',a:'#34d399',o:'#fbbf24'},CN={e:'صواني بيض',p:'عمال/أشخاص',v:'مركبات',a:'حيوانات',o:'أشياء أخرى'};
 const cat=k=>CAT[k]||'o',ar=k=>AR[k]||k;
-const S={thr:.5,itv:2500};
+const S={thr:.5,itv:6000};
 const series=new Map(),heat=new Float32Array(2304);let vname='';
 let model=null,busy=false,last=0,lastDraw=0,url=null,tracks=[],done=[],events=[],nid=1;
 
@@ -389,8 +389,8 @@ function findTrays(d,w,h,G){
 const ZC=document.createElement('canvas'),ZX=ZC.getContext('2d',{willReadFrequently:true});
 function zoneDets(){
   const vw=V.videoWidth,vh=V.videoHeight;if(!vw)return[];
-  ZC.width=288;ZC.height=Math.round(288*vh/vw);ZX.drawImage(V,0,0,ZC.width,ZC.height);
-  const k=vw/288,cs=findTrays(ZX.getImageData(0,0,ZC.width,ZC.height).data,ZC.width,ZC.height,3);
+  ZC.width=176;ZC.height=Math.max(1,Math.round(176*vh/vw));ZX.drawImage(V,0,0,ZC.width,ZC.height);
+  const k=vw/176,cs=findTrays(ZX.getImageData(0,0,ZC.width,ZC.height).data,ZC.width,ZC.height,4);
   const hs=cs.map(c=>c.h).sort((a,b)=>a-b),mid=hs.length>>1,ref=hs.length?(hs.length%2?hs[mid]:(hs[mid-1]+hs[mid])/2):16.5;
   return cs.map(c=>({class:'egg_tray',score:1,sus:hs.length>=2?Math.abs(c.h-ref)>=2.5:null,bbox:c.bbox.map(v=>v*k)}));
 }
@@ -428,9 +428,8 @@ function renderEggStatuses(){
   $('eggGroupCount').textContent=groups.length+' مجموعة';
   if(!groups.length){$('eggStatusList').innerHTML='<p class="muted">لم يتم رصد مجموعات بيض بعد. شغّل الفيديو وانتظر ظهور مربعات الكشف.</p>';return}
   $('eggStatusList').innerHTML=groups.map(k=>{
-    const unknown=k.sus===null||k.sus===undefined;
-    const label=unknown?'مقارنة غير كافية':k.sus>.5?'انحراف لوني — يحتاج فحصاً':'لون قريب من متوسط الصواني';
-    const color=unknown?'#94a3b8':k.sus>.5?'#ff2d4d':'#22c55e';
+    const label='سلامة القشرة غير محددة — لا يوجد نموذج كشف كسر';
+    const color='#94a3b8';
     return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:9px 10px;border:1px solid var(--line);border-right:4px solid '+color+';border-radius:9px;background:var(--navy2)"><b>مجموعة البيض #'+k.id+'</b><span style="color:'+color+';font-weight:700">'+label+'</span><small class="muted">مرات الرصد: '+k.hits+'</small></div>';
   }).join('');
 }
@@ -463,7 +462,7 @@ function draw(){
     const c=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'#94a3b8':k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],[x,y,bw,bh]=k.b,px=ox+x*sc,py=oy+y*sc;
     X.strokeStyle=c;X.lineWidth=2;X.strokeRect(px,py,bw*sc,bh*sc);
     if($('tTrail').checked&&k.tr&&k.tr.length>1){X.beginPath();k.tr.forEach((q,i)=>{const a=ox+q[0]*sc,b=oy+q[1]*sc;i?X.lineTo(a,b):X.moveTo(a,b)});X.globalAlpha=.7;X.stroke();X.globalAlpha=1}
-    const label=k.cls==='egg_tray'?(k.sus===null||k.sus===undefined?'غير كافٍ':k.sus>.5?'فحص اللون':'قريب'):`${ar(k.cls)} ${(k.s*100).toFixed(0)}%`;
+    const label=k.cls==='egg_tray'?'غير محدد':`${ar(k.cls)} ${(k.s*100).toFixed(0)}%`;
     const tagW=Math.min(Math.max(48,X.measureText(label).width+14),Math.max(48,bw*sc-4),Math.max(48,w-px));
     const tagH=18,tagX=Math.max(0,Math.min(px+2,w-tagW)),tagY=Math.max(0,Math.min(py+2,h-tagH));
     X.save();X.globalAlpha=.92;X.fillStyle=c;X.beginPath();X.roundRect(tagX,tagY,tagW,tagH,5);X.fill();
@@ -474,10 +473,10 @@ new ResizeObserver(draw).observe(st);
 
 async function tick(now){
   if(now-lastDraw>=150){draw();lastDraw=now;}
-  if(model&&!busy&&!V.paused&&!V.ended&&V.readyState>=2&&now-last>=S.itv){
+  if(!busy&&!V.paused&&!V.ended&&V.readyState>=2&&now-last>=S.itv){
     busy=true;
-    try{const t=V.currentTime,iw=320,ih=Math.max(1,Math.round(iw*V.videoHeight/V.videoWidth));IC.width=iw;IC.height=ih;IX.drawImage(V,0,0,iw,ih);const scale=V.videoWidth/iw,raw=await model.detect(IC,5,S.thr),dets=raw.map(d=>({...d,bbox:d.bbox.map(v=>v*scale)})).concat(zoneDets());if(!V.paused)update(dets,t)}
-    catch(e){status('خطأ أثناء التحليل','st-err')}
+    try{const t=V.currentTime,dets=zoneDets();if(!V.paused)update(dets,t)}
+    catch(e){status('تعذّر تحليل إطار الفيديو','st-err')}
     busy=false;last=performance.now();
   }
   requestAnimationFrame(tick);
