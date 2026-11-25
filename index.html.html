@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ALEX GUARD AI — Advanced Video Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1d3a;--navy:#17294f;--navy2:#203866;--line:#35539a;--red:#ff2d4d;--cyan:#22d3ee;--green:#34d399;--amber:#fbbf24;--tx:#f4f8ff;--mut:#aebfe0}
+*{box-sizing:border-box;margin:0}
+html,body{background:radial-gradient(1200px 600px at 80% -10%,#3a1630 0,transparent 60%),radial-gradient(1000px 700px at 0 100%,#0d3a7a 0,transparent 55%),var(--bg);color:var(--tx);font-family:Cairo,system-ui,sans-serif;min-height:100%}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.app{direction:ltr;display:grid;grid-template-columns:200px minmax(0,1fr) 340px;gap:14px;padding:14px;max-width:1700px;margin:auto}
+.app>*{direction:rtl}
+header{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:8px 16px;border:1px solid var(--line);background:linear-gradient(90deg,#1b0a1a55,var(--navy) 40%,#06204a55);border-radius:14px}
+.brand{display:flex;align-items:center;gap:12px;direction:ltr}
+.brand h1{font-size:28px;font-weight:800;letter-spacing:.5px;line-height:1}
+.brand h1 b{color:var(--red)}
+.brand small{display:block;color:var(--mut);font-size:12px;letter-spacing:.3px}
+.tag{flex:1;text-align:center;font-weight:600;color:#e3efff}
+.dev{color:var(--mut);font-size:13px;white-space:nowrap}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 10px var(--red);margin-inline-start:6px}
+nav{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);background:var(--navy);border-radius:14px;padding:12px;align-self:start}
+nav button{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;border:1px solid transparent;background:none;text-align:start;transition:.2s}
+nav button:hover{background:var(--navy2);border-color:var(--line)}
+nav button.on{background:linear-gradient(90deg,#ff2d4d,#b3122c);box-shadow:0 0 18px #ff2d4d55}
+nav .priv{margin-top:8px;font-size:12px;color:var(--mut);border-top:1px solid var(--line);padding-top:10px;line-height:1.7}
+.panel{border:1px solid var(--line);background:linear-gradient(180deg,var(--navy),#13244a);border-radius:14px;padding:14px}
+.panel h2{font-size:16px;margin-bottom:10px;font-weight:800}
+main{display:flex;flex-direction:column;gap:14px;min-width:0}
+.stage-col{min-height:560px;position:relative}
+.win{position:relative;display:flex;flex-direction:column;width:100%;height:560px;min-width:300px;min-height:340px;max-width:100%;overflow:hidden;resize:both;border:1px solid var(--cyan);border-radius:14px;background:var(--navy);box-shadow:0 0 28px #22d3ee22;z-index:3}
+.win:fullscreen{resize:none;border-radius:0;height:100%}
+.wh{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:grab;touch-action:none;user-select:none;background:#1e366a;border-bottom:1px solid var(--line)}
+.wh span{flex:1;font-weight:800}
+.wh .hint{font-weight:400;font-size:12px;color:var(--mut);flex:none}
+.ib{background:none;border:1px solid var(--line);border-radius:8px;width:34px;height:34px;display:grid;place-items:center}
+.ib:hover{border-color:var(--cyan)}
+.stage{position:relative;flex:1;min-height:0;background:#000}
+.stage video,.stage canvas{position:absolute;inset:0;width:100%;height:100%}
+.stage video{object-fit:contain}
+.stage canvas{pointer-events:none}
+.empty{position:absolute;inset:0;display:grid;place-content:center;gap:12px;text-align:center;padding:20px;color:var(--mut)}
+.empty.drag{background:#22d3ee14}
+.btn{border:1px solid var(--line);background:var(--navy2);padding:9px 16px;border-radius:10px;transition:.2s}
+.btn:hover{border-color:var(--cyan)}
+.btn.red{background:linear-gradient(180deg,#ff2d4d,#b3122c);border-color:#ff2d4d}
+.btn.blue{background:linear-gradient(180deg,#1d7bff,#1050c8);border-color:#2f86ff}
+.ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px;background:#142849;border-top:1px solid var(--line)}
+.ctl input[type=range]{flex:1;min-width:120px;accent-color:var(--red)}
+.ctl select{background:var(--navy2);border:1px solid var(--line);border-radius:8px;padding:6px}
+.time{font-variant-numeric:tabular-nums;color:#e3efff;font-size:13px}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.chip{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;background:var(--navy2)}
+.chip b{display:block;font-size:30px;line-height:1.1}
+.chip i{font-style:normal;color:var(--mut);font-size:13px}
+.donutwrap{display:flex;align-items:center;gap:14px;margin-top:10px}
+.donut{width:120px;height:120px;border-radius:50%;flex:none;background:conic-gradient(var(--line) 0 100%);display:grid;place-items:center;transition:background .4s}
+.donut div{width:84px;height:84px;border-radius:50%;background:var(--navy);display:grid;place-items:center;font-weight:800;font-size:22px}
+.leg{flex:1;display:grid;gap:6px;font-size:14px}
+.leg p{display:flex;align-items:center;gap:8px}
+.leg p span:last-child{margin-inline-start:auto;color:var(--mut)}
+.sw{width:11px;height:11px;border-radius:50%}
+.sum{margin-top:12px;font-size:13px;color:#d3e0f7;line-height:1.8;border-top:1px solid var(--line);padding-top:10px}
+#log{max-height:260px;overflow:auto;display:grid;gap:6px;margin-top:6px}
+.ev{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--navy2);text-align:start;width:100%}
+.ev:hover{border-color:var(--cyan)}
+.ev .t{margin-inline-start:auto;font-variant-numeric:tabular-nums;color:var(--cyan);font-size:13px}
+.muted{color:var(--mut);font-size:13px}
+.lh{display:flex;align-items:center;justify-content:space-between}
+.bar{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;grid-column:1/-1}
+.bar .panel{display:flex;flex-direction:column;gap:2px}
+.bar small{color:var(--mut)}
+.bar strong{font-size:26px;font-variant-numeric:tabular-nums}
+.st-ok{color:var(--green)}.st-err{color:var(--red)}.st-run{color:var(--cyan)}.st-wait{color:var(--amber)}
+dialog{background:var(--navy);color:var(--tx);border:1px solid var(--cyan);border-radius:14px;padding:20px;max-width:420px;width:92%}
+dialog::backdrop{background:#000a}
+dialog label{display:block;margin:12px 0 4px;font-size:14px}
+dialog input[type=range],dialog select{width:100%;accent-color:var(--red);background:var(--navy2);border:1px solid var(--line);border-radius:8px;padding:6px}
+@media(max-width:1100px){.app{grid-template-columns:minmax(0,1fr)}nav{flex-direction:row;flex-wrap:wrap}nav .priv{display:none}nav button{flex:1;justify-content:center}.tag,.dev{display:none}.bar{grid-template-columns:1fr 1fr}.win{height:420px}.stage-col{min-height:420px}}
+@media(max-width:560px){.brand h1{font-size:20px}.chips{grid-template-columns:1fr 1fr}.bar strong{font-size:20px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand">
+    <svg width="46" height="52" viewBox="0 0 46 52" aria-hidden="true"><path d="M23 2 43 10v16c0 13-9 21-20 24C12 47 3 39 3 26V10z" fill="#1a0a18" stroke="#ff2d4d" stroke-width="2.5"/><circle cx="23" cy="25" r="9" fill="none" stroke="#22d3ee" stroke-width="2.5"/><circle cx="23" cy="25" r="3.5" fill="#ff2d4d"/></svg>
+    <div><h1>ALEX GUARD <b>AI</b></h1><small>Advanced Video Intelligence Platform</small></div>
+  </div>
+  <div class="tag">مراقبة ذكية لخطوط الإنتاج .. لرؤية أعمق</div>
+  <div class="dev"><span class="dot"></span>v2.0.0 &nbsp;|&nbsp; Ali Al-Mamoori</div>
+</header>
+
+<nav aria-label="القائمة">
+  <button class="on" id="nHome">🏠 الرئيسية</button>
+  <button id="nSet">⚙️ إعدادات التحليل</button>
+  <button id="nLog">📄 السجل والتقارير</button>
+  <button id="nAbout">ℹ️ حول المنصة</button>
+  <div class="priv">🔒 المعالجة تتم داخل متصفحك. لا يُرفع أي فيديو إلى أي خدمة خارجية.</div>
+</nav>
+
+<main>
+  <div class="stage-col" id="col">
+  <section class="win" id="win" aria-label="نافذة الفيديو">
+    <div class="wh" id="wh"><span>📹 نافذة الفيديو</span><em class="hint">اسحب لتحريك النافذة · اسحب الزاوية لتغيير الحجم</em>
+      <button class="ib" id="bPick" title="اختيار فيديو">📂</button>
+      <button class="ib" id="bShot" title="لقطة مع المربعات">📷</button>
+      <button class="ib" id="bFull" title="ملء الشاشة">⛶</button></div>
+    <div class="stage" id="stage">
+      <video id="v" playsinline preload="metadata"></video>
+      <canvas id="c"></canvas>
+      <div class="empty" id="empty"><div style="font-size:40px">🎞️</div><div>اختر فيديو من جهازك أو أفلته هنا لبدء التحليل</div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn red" id="bSample">تحميل فيديو خط الإنتاج</button><button class="btn blue" id="bPick2">اختيار فيديو من جهازك</button></div><div class="muted" id="msg"></div></div>
+    </div>
+    <div class="ctl">
+      <button class="btn blue" id="bPlay">▶ تشغيل</button>
+      <button class="btn" id="bRe">↻ إعادة</button>
+      <span class="time" id="tm">00:00:00 / 00:00:00</span>
+      <input type="range" id="seek" min="0" max="1000" value="0" aria-label="شريط التقدم">
+      <select id="spd" aria-label="سرعة التشغيل"><option value=".5">0.5x</option><option value="1" selected>1.0x</option><option value="1.5">1.5x</option><option value="2">2x</option></select>
+      <label class="muted"><input type="checkbox" id="tTrail" checked> المسارات</label><label class="muted"><input type="checkbox" id="tHeat"> خريطة الحرارة</label>
+    </div>
+    <div class="muted" style="padding:6px 12px;background:var(--navy);border-top:1px solid var(--line);font-size:12px">🟩 صينية سليمة لونياً · 🟥 صينية مشتبهة (انحراف لوني عن المتوسط). تحليل لوني تقريبي وليس كشف كسر مؤكداً.</div>
+  </section>
+  </div>
+  <section class="panel"><div class="lh" style="flex-wrap:wrap;gap:6px"><h2>المخطط الزمني للعناصر</h2><span class="muted">اضغط للانتقال · <b style="color:#ff2d4d">أشخاص</b> <b style="color:#22d3ee">مركبات</b> <b style="color:#34d399">حيوانات</b> <b style="color:#fbbf24">أخرى</b></span></div><canvas id="tl" style="width:100%;height:120px;display:block;cursor:pointer;border-radius:8px"></canvas></section>
+  <input type="file" id="file" accept="video/*" hidden>
+</main>
+
+<aside style="display:flex;flex-direction:column;gap:14px;min-width:0">
+  <section class="panel"><h2>نتائج التحليل</h2>
+    <div class="chips">
+      <div class="chip"><b id="cT" style="color:var(--amber)">0</b><i>عناصر كلياً</i></div>
+      <div class="chip"><b id="cP" style="color:var(--red)">0</b><i>عمال</i></div>
+      <div class="chip"><b id="cV" style="color:#22c55e">0</b><i>صواني سليمة</i></div>
+      <div class="chip"><b id="cA" style="color:#ff2d4d">0</b><i>صواني مشتبهة</i></div>
+    </div>
+    <div class="donutwrap"><div class="donut" id="dn"><div id="dnT">—</div></div>
+      <div class="leg" id="leg"></div></div>
+    <div class="sum" id="sum">لم يتم اكتشاف أي عنصر بعد.</div>
+  </section>
+  <section class="panel"><div class="lh"><h2>سجل الأحداث</h2><span style="display:flex;gap:6px"><button class="btn" id="bRep" style="padding:5px 12px">تقرير PDF</button><button class="btn" id="bCsv" style="padding:5px 12px">CSV</button></span></div>
+    <div id="log"><p class="muted">اضغط على حدث للانتقال إلى توقيته في الفيديو.</p></div></section>
+</aside>
+
+<div class="bar">
+  <div class="panel"><small>مدة الفيديو</small><strong id="sDur">00:00:00</strong></div>
+  <div class="panel"><small>إجمالي الكائنات (ظهورات مؤكدة)</small><strong id="sTot">0</strong></div>
+  <div class="panel"><small>حالة التحليل</small><strong id="sSt" class="st-wait">جارٍ تحميل النموذج…</strong><button class="btn" id="bRetry" hidden style="margin-top:6px">إعادة المحاولة</button></div>
+  <div class="panel"><small>محرك الذكاء الاصطناعي</small><strong style="color:var(--cyan);font-size:20px">COCO-SSD · TensorFlow.js</strong></div>
+</div>
+</div>
+
+<dialog id="dSet"><h2>إعدادات التحليل</h2>
+  <label>حد الثقة الأدنى: <b id="thV">50%</b></label><input type="range" id="thr" min="30" max="90" value="50">
+  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="0">أسرع ما يمكن</option><option value="120" selected>كل 120 مللي ثانية</option><option value="300">كل 300 مللي ثانية (أخف على الهاتف)</option></select>
+  <p class="muted" style="margin-top:10px">تُطبَّق التغييرات فوراً على الفحوصات القادمة.</p>
+  <button class="btn blue" style="margin-top:14px" onclick="this.closest('dialog').close()">تم</button></dialog>
+<dialog id="dAbout"><h2>ALEX GUARD AI</h2>
+  <p style="line-height:1.9;margin-top:8px">منصة لتحليل الفيديو فقط. يكتشف النموذج الأشخاص والمركبات والحيوانات والأشياء التي يدعمها COCO-SSD، ويتتبعها بين الإطارات، ويسجّل ظهورها واختفاءها حسب توقيت الفيديو.</p>
+  <p class="muted" style="margin-top:8px">التتبع تقريبي (مطابقة المربعات بين الإطارات) وقد يعدّ العنصر ظهوراً جديداً إذا غاب أكثر من ثانية ونصف. صواني البيض تُكتشف بتحليل اللون، وتُلوَّن «مشتبهة» (أحمر) إذا انحرف لونها عن متوسط الصواني في الإطار، و«سليمة لونياً» (أخضر) غير ذلك؛ وهذا ليس كشف كسر مؤكداً؛ وكشف العمال يتم بنموذج COCO-SSD. لا يوجد كشف لعيوب البيض أو الصواني. المطوّر: Ali Al-Mamoori</p>
+  <button class="btn blue" style="margin-top:14px" onclick="this.closest('dialog').close()">إغلاق</button></dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+<script>
+const $=s=>document.getElementById(s);
+const V=$('v'),C=$('c'),X=C.getContext('2d');
+const AR={egg_tray:'صينية بيض',person:'عامل/شخص',car:'سيارة',truck:'شاحنة',bus:'حافلة',motorcycle:'دراجة نارية',bicycle:'دراجة',airplane:'طائرة',train:'قطار',boat:'قارب',bird:'طائر',cat:'قطة',dog:'كلب',horse:'حصان',sheep:'خروف',cow:'بقرة',elephant:'فيل',bear:'دب',zebra:'حمار وحشي',giraffe:'زرافة',backpack:'حقيبة ظهر',handbag:'حقيبة يد',bottle:'زجاجة',chair:'كرسي','cell phone':'هاتف',laptop:'حاسوب محمول','traffic light':'إشارة مرور'};
+const CAT={person:'p',egg_tray:'e'};'car truck bus motorcycle bicycle airplane train boat'.split(' ').forEach(k=>CAT[k]='v');'bird cat dog horse sheep cow elephant bear zebra giraffe'.split(' ').forEach(k=>CAT[k]='a');
+const COL={e:'#fbbf24',p:'#ff2d4d',v:'#22d3ee',a:'#34d399',o:'#fbbf24'},CN={e:'صواني بيض',p:'عمال/أشخاص',v:'مركبات',a:'حيوانات',o:'أشياء أخرى'};
+const cat=k=>CAT[k]||'o',ar=k=>AR[k]||k;
+const S={thr:.5,itv:120};
+const series=new Map(),heat=new Float32Array(2304);let vname='';
+let model=null,busy=false,last=0,url=null,tracks=[],done=[],events=[],nid=1;
+
+const fmt=t=>{t=Math.max(0,Math.floor(t||0));return[t/3600|0,(t/60|0)%60,t%60].map(n=>String(n).padStart(2,'0')).join(':')};
+function status(txt,cls){const e=$('sSt');e.textContent=txt;e.className=cls;$('bRetry').hidden=cls!=='st-err'}
+
+/* ---------- تحميل النموذج ---------- */
+async function loadModel(){
+  status('جارٍ تحميل النموذج…','st-wait');
+  try{
+    if(!window.cocoSsd||!window.tf)throw new Error('lib');
+    model=await cocoSsd.load({base:'lite_mobilenet_v2'});
+    status(V.src?'جاهز للتحليل':'جاهز · اختر فيديو','st-ok');
+  }catch(e){model=null;status('فشل تحميل النموذج','st-err');$('msg').textContent='تعذّر تحميل مكتبات الذكاء الاصطناعي. تحقق من الاتصال بالإنترنت ثم اضغط «إعادة المحاولة».'}
+}
+$('bRetry').onclick=loadModel;
+
+/* ---------- الفيديو ---------- */
+function openFile(f){
+  if(!f)return;
+  if(!f.type.startsWith('video/')){$('msg').textContent='الملف المختار ليس فيديو.';return}
+  vname=f.name;freeVideo();resetResults();
+  url=URL.createObjectURL(f);V.src=url;V.load();$('msg').textContent='';
+}
+function freeVideo(){if(url){V.pause();V.removeAttribute('src');V.load();URL.revokeObjectURL(url);url=null}}
+addEventListener('pagehide',freeVideo);
+V.onloadedmetadata=()=>{$('empty').hidden=true;$('sDur').textContent=fmt(V.duration);syncTime();if(model)status('جاهز للتحليل','st-ok')};
+V.onerror=()=>{$('empty').hidden=false;$('msg').textContent='تعذّر تشغيل هذا الفيديو. جرّب صيغة MP4 أو WebM.';status('خطأ في الفيديو','st-err');freeVideo()};
+['bPick','bPick2'].forEach(i=>$(i).onclick=()=>$('file').click());
+$('bSample').onclick=()=>{vname='eggs.mp4';freeVideo();resetResults();V.src='eggs.mp4';V.load();$('msg').textContent=''};
+$('file').onchange=e=>{openFile(e.target.files[0]);e.target.value=''};
+const st=$('stage');
+st.ondragover=e=>{e.preventDefault();$('empty').classList.add('drag')};
+st.ondragleave=()=>$('empty').classList.remove('drag');
+st.ondrop=e=>{e.preventDefault();$('empty').classList.remove('drag');openFile(e.dataTransfer.files[0])};
+
+$('bPlay').onclick=()=>{if(!V.src)return $('file').click();V.paused?V.play():V.pause()};
+$('bRe').onclick=()=>{if(!V.src)return;resetResults();V.currentTime=0;V.play()};
+$('spd').onchange=e=>V.playbackRate=+e.target.value;
+$('seek').oninput=e=>{if(V.duration)V.currentTime=V.duration*e.target.value/1000};
+V.onplay=()=>{$('bPlay').textContent='⏸ إيقاف مؤقت';status(model?'قيد التحليل…':'بانتظار النموذج…',model?'st-run':'st-wait')};
+V.onpause=()=>{$('bPlay').textContent='▶ تشغيل';if(!V.ended&&model)status('متوقف مؤقتاً','st-wait')};
+V.onended=()=>{closeAll(V.duration);$('bPlay').textContent='▶ تشغيل';status('اكتمل التحليل','st-ok')};
+V.onseeking=()=>closeAll(Math.min(V.currentTime,tracks.reduce((m,k)=>Math.max(m,k.last),0)||V.currentTime));
+function syncTime(){drawTL();$('tm').textContent=fmt(V.currentTime)+' / '+fmt(V.duration);if(V.duration)$('seek').value=V.currentTime/V.duration*1000}
+V.ontimeupdate=syncTime;
+$('bFull').onclick=()=>{const w=$('win');document.fullscreenElement?document.exitFullscreen():(w.requestFullscreen||w.webkitRequestFullscreen).call(w)};
+
+/* ---------- تحريك النافذة ---------- */
+(()=>{const w=$('win');let sx,sy,ox=0,oy=0,on=false;
+$('wh').addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;on=true;sx=e.clientX;sy=e.clientY;e.currentTarget.setPointerCapture(e.pointerId);$('wh').style.cursor='grabbing'});
+$('wh').addEventListener('pointermove',e=>{if(!on)return;w.style.transform=`translate(${ox+e.clientX-sx}px,${oy+e.clientY-sy}px)`});
+$('wh').addEventListener('pointerup',e=>{if(!on)return;on=false;ox+=e.clientX-sx;oy+=e.clientY-sy;$('wh').style.cursor='grab'});
+})();
+
+/* ---------- كشف منطقة المنتج على السير (تحليل لوني بدون نموذج مدرَّب) ---------- */
+function findTrays(d,w,h,G){
+  const gw=w/G|0,gh=h/G|0,N=gw*gh,cnt=new Uint16Array(N),sh=new Float32Array(N),ss=new Float32Array(N),sv=new Float32Array(N);
+  for(let y=0;y<gh*G;y++)for(let x=0;x<gw*G;x++){
+    const i=(y*w+x)*4,r=d[i]/255,g=d[i+1]/255,b=d[i+2]/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),df=mx-mn;
+    if(mx<.27||df===0)continue;const s=df/mx;if(s<.35)continue;
+    let H=mx===r?((g-b)/df)%6:mx===g?(b-r)/df+2:(r-g)/df+4;H*=60;if(H<0)H+=360;
+    if(H<10||H>50)continue;
+    const c=(y/G|0)*gw+(x/G|0);cnt[c]++;sh[c]+=H;ss[c]+=s;sv[c]+=mx}
+  const on=new Uint8Array(N),dil=new Uint8Array(N),T=G*G*.55;
+  for(let i=0;i<N;i++)on[i]=cnt[i]>=T?1:0;
+  for(let y=0;y<gh;y++)for(let x=0;x<gw;x++){if(on[y*gw+x])dil[y*gw+x]=1;}
+  const seen=new Uint8Array(N),out=[];
+  for(let s0=0;s0<N;s0++){
+    if(!dil[s0]||seen[s0])continue;
+    const st=[s0];seen[s0]=1;let x0=1e9,y0=1e9,x1=-1,y1=-1,n=0,H=0,S=0,V=0,pc=0;
+    while(st.length){const c=st.pop(),cx=c%gw,cy=c/gw|0;
+      if(on[c]){n++;x0=Math.min(x0,cx);x1=Math.max(x1,cx);y0=Math.min(y0,cy);y1=Math.max(y1,cy);H+=sh[c];S+=ss[c];V+=sv[c];pc+=cnt[c]}
+      for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const X=cx+dx,Y=cy+dy;if(X>=0&&Y>=0&&X<gw&&Y<gh){const q=Y*gw+X;if(dil[q]&&!seen[q]){seen[q]=1;st.push(q)}}}}
+    if(n<25)continue;
+    out.push({bbox:[x0*G,y0*G,(x1-x0+1)*G,(y1-y0+1)*G],cells:n,h:H/pc,s:S/pc,v:V/pc});
+  }
+  return out;
+}
+const ZC=document.createElement('canvas'),ZX=ZC.getContext('2d',{willReadFrequently:true});
+function zoneDets(){
+  const vw=V.videoWidth,vh=V.videoHeight;if(!vw)return[];
+  ZC.width=288;ZC.height=Math.round(288*vh/vw);ZX.drawImage(V,0,0,ZC.width,ZC.height);
+  const k=vw/288,cs=findTrays(ZX.getImageData(0,0,ZC.width,ZC.height).data,ZC.width,ZC.height,3);
+  const hs=cs.map(c=>c.h).sort((a,b)=>a-b),ref=hs.length>=3?hs[hs.length>>1]:16.5;
+  return cs.map(c=>({class:'egg_tray',score:1,sus:c.h-ref>=1.5,bbox:c.bbox.map(v=>v*k)}));
+}
+/* ---------- التتبع ---------- */
+function iou(a,b){const x=Math.max(a[0],b[0]),y=Math.max(a[1],b[1]),X2=Math.min(a[0]+a[2],b[0]+b[2]),Y2=Math.min(a[1]+a[3],b[1]+b[3]);const i=Math.max(0,X2-x)*Math.max(0,Y2-y);return i/(a[2]*a[3]+b[2]*b[3]-i||1)}
+function addEv(t,type,k){events.push({t,type,cls:k.cls,id:k.id});events.sort((a,b)=>a.t-b.t);renderLog()}
+function update(dets,t){
+  const used=new Set();
+  for(const d of dets){
+    if(d.score<S.thr)continue;
+    let best=null,bi=.2;
+    for(const k of tracks){if(used.has(k)||k.cls!==d.class)continue;const i=iou(k.b,d.bbox);if(i>bi){bi=i;best=k}}
+    if(!best){best={id:nid++,cls:d.class,first:t,hits:0,ok:false,b:d.bbox};tracks.push(best)}
+    used.add(best);best.b=best.b.map((v,i)=>v*.5+d.bbox[i]*.5);best.s=d.score;best.last=t;best.hits++;trackFx(best);best.sus=best.sus===undefined?(d.sus?1:0):best.sus*.7+(d.sus?.3:0);
+    if(!best.ok&&best.hits>=3){best.ok=true;done.push(best);addEv(best.first,'ظهور',best)}
+  }
+  tracks=tracks.filter(k=>{if(t-k.last>1.5){if(k.ok)addEv(k.last,'اختفاء',k);return false}return true});
+  sample(t);renderStats();drawTL();
+}
+function closeAll(t){tracks.forEach(k=>{if(k.ok)addEv(Math.max(k.last,Math.min(t,k.last+1.5)),'اختفاء',k)});tracks=[];renderStats()}
+function resetResults(){series.clear();heat.fill(0);setTimeout(drawTL);tracks=[];done=[];events=[];nid=1;renderLog();renderStats()}
+
+/* ---------- العرض ---------- */
+function renderLog(){
+  const L=$('log');
+  if(!events.length){L.innerHTML='<p class="muted">لا توجد أحداث بعد. اضغط على حدث للانتقال إلى توقيته.</p>';return}
+  L.innerHTML='';
+  events.forEach(e=>{const b=document.createElement('button');b.className='ev';
+    b.innerHTML=`<span class="sw" style="background:${COL[cat(e.cls)]}"></span><span>${e.type} ${ar(e.cls)} #${e.id}</span><span class="t">${fmt(e.t)}</span>`;
+    b.onclick=()=>{V.currentTime=e.t};L.appendChild(b)});
+  L.scrollTop=L.scrollHeight;
+}
+function renderStats(){
+  const n={p:0,e:0,v:0,a:0,o:0},kinds={};
+  done.forEach(k=>{n[cat(k.cls)]++;kinds[k.cls]=(kinds[k.cls]||0)+1});
+  const tot=done.length;
+  $('cT').textContent=tot;$('cP').textContent=n.p;const bad=done.filter(k=>k.cls==='egg_tray'&&k.sus>.5).length;$('cV').textContent=n.e-bad;$('cA').textContent=bad;$('sTot').textContent=tot;
+  let acc=0,g=[];
+  ['p','e','v','a','o'].forEach(c=>{if(n[c]){const s=acc/tot*100;acc+=n[c];g.push(`${COL[c]} ${s}% ${acc/tot*100}%`)}});
+  $('dn').style.background=tot?`conic-gradient(${g.join(',')})`:'conic-gradient(var(--line) 0 100%)';
+  $('dnT').textContent=tot?tot:'—';
+  $('leg').innerHTML=['p','e','v','a','o'].map(c=>`<p><span class="sw" style="background:${COL[c]}"></span><span>${CN[c]}</span><span>${n[c]}${tot?' · '+(n[c]/tot*100).toFixed(0)+'%':''}</span></p>`).join('');
+  const ks=Object.keys(kinds);
+  $('sum').innerHTML=ks.length?`<b>${ks.length} نوع مكتشف:</b> `+ks.map(k=>`${ar(k)} (${kinds[k]})`).join('، '):'لم يتم اكتشاف أي عنصر بعد.';
+  if(n.p)$('sum').innerHTML+=`<br>إجمالي زمن ظهور الأشخاص: ${done.filter(k=>k.cls==='person').reduce((q,k)=>q+Math.max(0,k.last-k.first),0).toFixed(1)} ثانية`;
+}
+renderStats();
+
+function draw(){
+  const w=C.clientWidth,h=C.clientHeight,d=devicePixelRatio||1;
+  if(C.width!==Math.round(w*d)||C.height!==Math.round(h*d)){C.width=Math.round(w*d);C.height=Math.round(h*d)}
+  X.setTransform(d,0,0,d,0,0);X.clearRect(0,0,w,h);
+  const vw=V.videoWidth,vh=V.videoHeight;if(!vw)return;
+  const sc=Math.min(w/vw,h/vh),ox=(w-vw*sc)/2,oy=(h-vh*sc)/2,t=V.currentTime;
+  if($('tHeat').checked){let m=0;for(const v of heat)m=Math.max(m,v);if(m){const cw=vw*sc/48,ch=vh*sc/48;for(let i=0;i<2304;i++)if(heat[i]){X.fillStyle=`rgba(255,45,77,${Math.min(.65,heat[i]/m*.65)})`;X.fillRect(ox+(i%48)*cw,oy+(i/48|0)*ch,cw+1,ch+1)}}}
+  X.font='600 12px Cairo,sans-serif';X.textBaseline='middle';
+  for(const k of tracks){
+    if(!k.ok||t-k.last>.6)continue;
+    const c=k.cls==='egg_tray'?(k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],[x,y,bw,bh]=k.b,px=ox+x*sc,py=oy+y*sc;
+    X.strokeStyle=c;X.lineWidth=2;X.strokeRect(px,py,bw*sc,bh*sc);
+    if($('tTrail').checked&&k.tr&&k.tr.length>1){X.beginPath();k.tr.forEach((q,i)=>{const a=ox+q[0]*sc,b=oy+q[1]*sc;i?X.lineTo(a,b):X.moveTo(a,b)});X.globalAlpha=.7;X.stroke();X.globalAlpha=1}
+    const label=k.cls==='egg_tray'?(k.sus>.5?'مشتبه لونياً':'سليم لونياً'):`${ar(k.cls)} ${(k.s*100).toFixed(1)}%`,tw=X.measureText(label).width+12;
+    X.fillStyle=c;X.fillRect(px,Math.max(0,py-20),tw,20);
+    X.fillStyle='#02060e';X.fillText(label,px+6,Math.max(0,py-20)+10);
+  }
+}
+new ResizeObserver(draw).observe(st);
+
+async function tick(now){
+  draw();
+  if(model&&!busy&&!V.paused&&!V.ended&&V.readyState>=2&&now-last>=S.itv){
+    busy=true;
+    try{const t=V.currentTime,dets=(await model.detect(V,25,S.thr)).concat(zoneDets());if(!V.paused)update(dets,t)}
+    catch(e){status('خطأ أثناء التحليل','st-err')}
+    busy=false;last=performance.now();
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+/* ---------- الإعدادات والقائمة ---------- */
+$('thr').oninput=e=>{S.thr=e.target.value/100;$('thV').textContent=e.target.value+'%'};
+$('itv').onchange=e=>S.itv=+e.target.value;
+$('nSet').onclick=()=>$('dSet').showModal();
+$('nAbout').onclick=()=>$('dAbout').showModal();
+$('nHome').onclick=()=>scrollTo({top:0,behavior:'smooth'});
+$('nLog').onclick=()=>$('log').scrollIntoView({behavior:'smooth',block:'center'});
+$('bCsv').onclick=()=>{
+  if(!events.length)return alert('لا توجد أحداث لتصديرها بعد.');
+  const rows=['الوقت,الحدث,العنصر,المعرف,الوقت بالثواني',...events.map(e=>[fmt(e.t),e.type,ar(e.cls),e.id,e.t.toFixed(2)].join(','))];
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+rows.join('\n')],{type:'text/csv'}));a.download='alex-guard-ai-events.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+/* ---------- مخطط زمني، مسارات، حرارة، لقطة، تقرير ---------- */
+function trackFx(k){
+  const cx=k.b[0]+k.b[2]/2;(k.tr=k.tr||[]).push([cx,k.b[1]+k.b[3]/2]);if(k.tr.length>40)k.tr.shift();
+  if(k.ok&&V.videoWidth){const gx=Math.max(0,Math.min(47,cx/V.videoWidth*48|0)),gy=Math.max(0,Math.min(47,(k.b[1]+k.b[3])/V.videoHeight*48|0));heat[gy*48+gx]++}
+}
+function sample(t){const c={p:0,e:0,v:0,a:0,o:0};tracks.forEach(k=>{if(k.ok&&t-k.last<.6)c[cat(k.cls)]++});series.set(Math.floor(t*2),c)}
+function drawTL(){
+  const c=$('tl'),w=c.clientWidth,h=c.clientHeight,d=devicePixelRatio||1;if(!w)return;
+  if(c.width!==Math.round(w*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}
+  const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);g.fillStyle='#142849';g.fillRect(0,0,w,h);
+  const D=V.duration;if(!D)return;let mx=1;series.forEach(o=>mx=Math.max(mx,o.p+o.v+o.a+o.o));
+  const bw=Math.max(2,w/(D*2));
+  series.forEach((o,k)=>{let y=h-14;const x=w-(k/2/D)*w-bw;['p','e','v','a','o'].forEach(q=>{const hh=o[q]/mx*(h-26);g.fillStyle=COL[q];g.fillRect(x,y-hh,bw,hh);y-=hh})});
+  g.fillStyle='#7f93b8';g.font='11px Cairo,sans-serif';g.fillText('00:00:00',w-52,h-2);g.fillText(fmt(D),2,h-2);
+  g.fillStyle='#fff';g.fillRect(w-(V.currentTime/D)*w-1,0,2,h-14);
+}
+$('tl').onclick=e=>{if(V.duration){const r=e.currentTarget.getBoundingClientRect();V.currentTime=(1-(e.clientX-r.left)/r.width)*V.duration}};
+addEventListener('resize',drawTL);
+$('bShot').onclick=()=>{
+  if(!V.videoWidth)return;const o=document.createElement('canvas');o.width=V.videoWidth;o.height=V.videoHeight;
+  const g=o.getContext('2d'),t=V.currentTime;g.drawImage(V,0,0);g.font='600 '+Math.max(14,o.width/40)+'px Cairo,sans-serif';
+  tracks.forEach(k=>{if(!k.ok||t-k.last>.6)return;const c=k.cls==='egg_tray'?(k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],L=k.cls==='egg_tray'?(k.sus>.5?'مشتبه لونياً':'سليم لونياً'):ar(k.cls)+' '+(k.s*100|0)+'%',fs=Math.max(14,o.width/40);
+    g.strokeStyle=c;g.lineWidth=Math.max(2,o.width/300);g.strokeRect(...k.b);g.fillStyle=c;g.fillRect(k.b[0],k.b[1]-fs-6,g.measureText(L).width+10,fs+6);g.fillStyle='#02060e';g.fillText(L,k.b[0]+5,k.b[1]-8)});
+  o.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='alex-guard-'+fmt(t).replace(/:/g,'-')+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
+};
+$('bRep').onclick=()=>{
+  if(!done.length&&!events.length)return alert('لا توجد نتائج بعد. شغّل الفيديو أولاً.');
+  const w=open('','_blank');if(!w)return alert('اسمح بالنوافذ المنبثقة لعرض التقرير.');
+  const n={p:0,e:0,v:0,a:0,o:0};done.forEach(k=>n[cat(k.cls)]++);
+  const dw=done.filter(k=>k.cls==='person').reduce((q,k)=>q+Math.max(0,k.last-k.first),0);
+  w.document.write(`<html dir="rtl" lang="ar"><meta charset="utf-8"><title>تقرير ALEX GUARD AI</title><style>body{font-family:Cairo,Tahoma,sans-serif;padding:24px;color:#111}h1{color:#b3122c}table{border-collapse:collapse;width:100%;margin-top:12px}td,th{border:1px solid #bbb;padding:6px;text-align:right}img{width:100%;border:1px solid #bbb}</style><h1>ALEX GUARD AI — تقرير تحليل فيديو</h1><p>الملف: ${vname||'—'} | المدة: ${fmt(V.duration)} | التاريخ: ${new Date().toLocaleString('ar')}</p><p>المحرك: COCO-SSD (TensorFlow.js) · حد الثقة ${Math.round(S.thr*100)}%</p><p>الإجمالي: ${done.length} — أشخاص ${n.p}، مركبات ${n.v}، حيوانات ${n.a}، أخرى ${n.o}. إجمالي زمن ظهور الأشخاص: ${dw.toFixed(1)} ثانية.</p><img src="${$('tl').toDataURL()}"><table><tr><th>الوقت</th><th>الحدث</th><th>العنصر</th><th>المعرّف</th></tr>${events.map(e=>`<tr><td>${fmt(e.t)}</td><td>${e.type}</td><td>${ar(e.cls)}</td><td>${e.id}</td></tr>`).join('')}</table><p style="color:#666;font-size:12px">التتبع تقريبي، والنموذج لا يكتشف عيوب المنتجات. المطوّر: Ali Al-Mamoori</p>`);
+  w.document.close();setTimeout(()=>w.print(),500);
+};
+loadModel();
+</script>
+</body>
+</html>
