@@ -268,6 +268,19 @@ body[data-theme] .brand h1 b{color:var(--line)}
 body[data-theme] .dot{background:var(--line);box-shadow:0 0 10px var(--line)}
 body[data-theme] .ev .t{color:var(--line)}
 body[data-theme] .ctl input[type=range],body[data-theme] dialog input[type=range]{accent-color:var(--line)}
+/* Pastel two-color themes */
+body[data-theme="sky-light"]{--bg:#dff4ff;--navy:#dff4ff;--navy2:#dff4ff;--line:#176b87;--red:#176b87;--cyan:#176b87;--green:#176b87;--amber:#176b87;--tx:#176b87;--mut:#176b87;background:#dff4ff}
+body[data-theme="mint-light"]{--bg:#ddf8ed;--navy:#ddf8ed;--navy2:#ddf8ed;--line:#176b50;--red:#176b50;--cyan:#176b50;--green:#176b50;--amber:#176b50;--tx:#176b50;--mut:#176b50;background:#ddf8ed}
+body[data-theme="lavender-light"]{--bg:#eee5ff;--navy:#eee5ff;--navy2:#eee5ff;--line:#56358c;--red:#56358c;--cyan:#56358c;--green:#56358c;--amber:#56358c;--tx:#56358c;--mut:#56358c;background:#eee5ff}
+body[data-theme="rose-light"]{--bg:#ffe5ed;--navy:#ffe5ed;--navy2:#ffe5ed;--line:#963653;--red:#963653;--cyan:#963653;--green:#963653;--amber:#963653;--tx:#963653;--mut:#963653;background:#ffe5ed}
+body[data-theme="peach-light"]{--bg:#ffeadb;--navy:#ffeadb;--navy2:#ffeadb;--line:#9a4d22;--red:#9a4d22;--cyan:#9a4d22;--green:#9a4d22;--amber:#9a4d22;--tx:#9a4d22;--mut:#9a4d22;background:#ffeadb}
+body[data-theme="lemon-light"]{--bg:#fff6cc;--navy:#fff6cc;--navy2:#fff6cc;--line:#756018;--red:#756018;--cyan:#756018;--green:#756018;--amber:#756018;--tx:#756018;--mut:#756018;background:#fff6cc}
+body[data-theme$="-light"] header,body[data-theme$="-light"] nav,body[data-theme$="-light"] .panel,body[data-theme$="-light"] .bar .panel,body[data-theme$="-light"] .stage,body[data-theme$="-light"] .win,body[data-theme$="-light"] .wh,body[data-theme$="-light"] .ctl,body[data-theme$="-light"] .ev,body[data-theme$="-light"] .btn,body[data-theme$="-light"] .ib,body[data-theme$="-light"] dialog{background:var(--bg);color:var(--tx);border-color:var(--line);box-shadow:none}
+body[data-theme$="-light"] .btn.red,body[data-theme$="-light"] .btn.blue,body[data-theme$="-light"] nav button.on{background:var(--line);color:var(--bg)}
+body[data-theme$="-light"] .theme-option{background:var(--bg);color:var(--tx);border-color:var(--line)}
+body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-theme$="-light"] .priv,body[data-theme$="-light"] .dev,body[data-theme$="-light"] .bar small{color:var(--tx)}
+
+
 </style>
 
 <dialog id="dSet"><h2>إعدادات التحليل</h2>
@@ -460,18 +473,6 @@ async function tick(now){
 }
 requestAnimationFrame(tick);
 
-
-/* Pastel two-color themes */
-body[data-theme="sky-light"]{--bg:#dff4ff;--navy:#dff4ff;--navy2:#dff4ff;--line:#176b87;--red:#176b87;--cyan:#176b87;--green:#176b87;--amber:#176b87;--tx:#176b87;--mut:#176b87;background:#dff4ff}
-body[data-theme="mint-light"]{--bg:#ddf8ed;--navy:#ddf8ed;--navy2:#ddf8ed;--line:#176b50;--red:#176b50;--cyan:#176b50;--green:#176b50;--amber:#176b50;--tx:#176b50;--mut:#176b50;background:#ddf8ed}
-body[data-theme="lavender-light"]{--bg:#eee5ff;--navy:#eee5ff;--navy2:#eee5ff;--line:#56358c;--red:#56358c;--cyan:#56358c;--green:#56358c;--amber:#56358c;--tx:#56358c;--mut:#56358c;background:#eee5ff}
-body[data-theme="rose-light"]{--bg:#ffe5ed;--navy:#ffe5ed;--navy2:#ffe5ed;--line:#963653;--red:#963653;--cyan:#963653;--green:#963653;--amber:#963653;--tx:#963653;--mut:#963653;background:#ffe5ed}
-body[data-theme="peach-light"]{--bg:#ffeadb;--navy:#ffeadb;--navy2:#ffeadb;--line:#9a4d22;--red:#9a4d22;--cyan:#9a4d22;--green:#9a4d22;--amber:#9a4d22;--tx:#9a4d22;--mut:#9a4d22;background:#ffeadb}
-body[data-theme="lemon-light"]{--bg:#fff6cc;--navy:#fff6cc;--navy2:#fff6cc;--line:#756018;--red:#756018;--cyan:#756018;--green:#756018;--amber:#756018;--tx:#756018;--mut:#756018;background:#fff6cc}
-body[data-theme$="-light"] header,body[data-theme$="-light"] nav,body[data-theme$="-light"] .panel,body[data-theme$="-light"] .bar .panel,body[data-theme$="-light"] .stage,body[data-theme$="-light"] .win,body[data-theme$="-light"] .wh,body[data-theme$="-light"] .ctl,body[data-theme$="-light"] .ev,body[data-theme$="-light"] .btn,body[data-theme$="-light"] .ib,body[data-theme$="-light"] dialog{background:var(--bg);color:var(--tx);border-color:var(--line);box-shadow:none}
-body[data-theme$="-light"] .btn.red,body[data-theme$="-light"] .btn.blue,body[data-theme$="-light"] nav button.on{background:var(--line);color:var(--bg)}
-body[data-theme$="-light"] .theme-option{background:var(--bg);color:var(--tx);border-color:var(--line)}
-body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-theme$="-light"] .priv,body[data-theme$="-light"] .dev,body[data-theme$="-light"] .bar small{color:var(--tx)}
 
 /* ---------- مبدّل ألوان الموقع ---------- */
 const themeNames=['blue-yellow','purple-orange','black-red','green-black','navy-cyan','pink-purple','burgundy-gold','teal-coral','sky-light','mint-light','lavender-light','rose-light','peach-light','lemon-light'];
