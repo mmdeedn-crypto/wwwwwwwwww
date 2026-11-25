@@ -209,6 +209,12 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
     <button class="theme-option" data-theme-choice="pink-purple"><span class="swatches"><i style="background:#2a1038"></i><i style="background:#ff5cab"></i></span><b>بنفسجي + وردي</b></button>
     <button class="theme-option" data-theme-choice="burgundy-gold"><span class="swatches"><i style="background:#3b101c"></i><i style="background:#f2c14e"></i></span><b>عنابي + ذهبي</b></button>
     <button class="theme-option" data-theme-choice="teal-coral"><span class="swatches"><i style="background:#073b3a"></i><i style="background:#ff6b5e"></i></span><b>تركوازي + مرجاني</b></button>
+    <button class="theme-option" data-theme-choice="sky-light"><span class="swatches"><i style="background:#dff4ff"></i><i style="background:#176b87"></i></span><b>سماوي فاتح</b></button>
+    <button class="theme-option" data-theme-choice="mint-light"><span class="swatches"><i style="background:#ddf8ed"></i><i style="background:#176b50"></i></span><b>نعناعي فاتح</b></button>
+    <button class="theme-option" data-theme-choice="lavender-light"><span class="swatches"><i style="background:#eee5ff"></i><i style="background:#56358c"></i></span><b>لافندر فاتح</b></button>
+    <button class="theme-option" data-theme-choice="rose-light"><span class="swatches"><i style="background:#ffe5ed"></i><i style="background:#963653"></i></span><b>وردي فاتح</b></button>
+    <button class="theme-option" data-theme-choice="peach-light"><span class="swatches"><i style="background:#ffeadb"></i><i style="background:#9a4d22"></i></span><b>خوخي فاتح</b></button>
+    <button class="theme-option" data-theme-choice="lemon-light"><span class="swatches"><i style="background:#fff6cc"></i><i style="background:#756018"></i></span><b>ليموني فاتح</b></button>
   </div>
   <button class="btn blue" style="margin-top:16px" id="themeClose">إغلاق</button>
 </dialog>
@@ -248,7 +254,7 @@ body[data-theme] .ctl input[type=range],body[data-theme] dialog input[type=range
 
 <dialog id="dSet"><h2>إعدادات التحليل</h2>
   <label>حد الثقة الأدنى: <b id="thV">50%</b></label><input type="range" id="thr" min="30" max="90" value="50">
-  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="0">أسرع ما يمكن</option><option value="120" selected>كل 120 مللي ثانية</option><option value="300">كل 300 مللي ثانية (أخف على الهاتف)</option></select>
+  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="350" selected>كل 350 مللي ثانية (متوازن)</option><option value="600">كل 600 مللي ثانية (أخف على الهاتف)</option><option value="900">كل 900 مللي ثانية (أخف جداً)</option></select>
   <p class="muted" style="margin-top:10px">تُطبَّق التغييرات فوراً على الفحوصات القادمة.</p>
   <button class="btn blue" style="margin-top:14px" onclick="this.closest('dialog').close()">تم</button></dialog>
 <dialog id="dAbout"><h2>ALEX GUARD AI</h2>
@@ -265,11 +271,11 @@ const AR={egg_tray:'صينية بيض',person:'عامل/شخص',car:'سيارة'
 const CAT={person:'p',egg_tray:'e'};'car truck bus motorcycle bicycle airplane train boat'.split(' ').forEach(k=>CAT[k]='v');'bird cat dog horse sheep cow elephant bear zebra giraffe'.split(' ').forEach(k=>CAT[k]='a');
 const COL={e:'#fbbf24',p:'#ff2d4d',v:'#22d3ee',a:'#34d399',o:'#fbbf24'},CN={e:'صواني بيض',p:'عمال/أشخاص',v:'مركبات',a:'حيوانات',o:'أشياء أخرى'};
 const cat=k=>CAT[k]||'o',ar=k=>AR[k]||k;
-const S={thr:.5,itv:120};
+const S={thr:.5,itv:350};
 const series=new Map(),heat=new Float32Array(2304);let vname='';
 let model=null,busy=false,last=0,url=null,tracks=[],done=[],events=[],nid=1;
 
-const fmt=t=>{t=Math.max(0,Math.floor(t||0));return[t/3600|0,(t/60|0)%60,t%60].map(n=>String(n).padStart(2,'0')).join(':')};
+const fmt=t=>{t=Number(t);if(!Number.isFinite(t)||t<0)return '00:00:00';t=Math.floor(t);return[String(Math.floor(t/3600)),String(Math.floor(t/60)%60),String(t%60)].map(n=>n.padStart(2,'0')).join(':')};
 function status(txt,cls){const e=$('sSt');e.textContent=txt;e.className=cls;$('bRetry').hidden=cls!=='st-err'}
 
 /* ---------- تحميل النموذج ---------- */
@@ -292,7 +298,9 @@ function openFile(f){
 }
 function freeVideo(){if(url){V.pause();V.removeAttribute('src');V.load();URL.revokeObjectURL(url);url=null}}
 addEventListener('pagehide',freeVideo);
-V.onloadedmetadata=()=>{$('empty').hidden=true;$('sDur').textContent=fmt(V.duration);syncTime();if(model)status('جاهز للتحليل','st-ok')};
+function refreshVideoMeta(){if(Number.isFinite(V.duration)&&V.duration>0)$('sDur').textContent=fmt(V.duration);syncTime()}
+V.onloadedmetadata=()=>{$('empty').hidden=true;refreshVideoMeta();if(model)status('جاهز للتحليل','st-ok')};
+V.ondurationchange=refreshVideoMeta;
 V.onerror=()=>{$('empty').hidden=false;$('msg').textContent='تعذّر تشغيل هذا الفيديو. جرّب صيغة MP4 أو WebM.';status('خطأ في الفيديو','st-err');freeVideo()};
 ['bPick','bPick2'].forEach(i=>$(i).onclick=()=>$('file').click());
 $('bSample').onclick=()=>{vname='eggs.mp4';freeVideo();resetResults();V.src='eggs.mp4';V.load();$('msg').textContent=''};
@@ -310,7 +318,7 @@ V.onplay=()=>{$('bPlay').textContent='⏸ إيقاف مؤقت';status(model?'ق�
 V.onpause=()=>{$('bPlay').textContent='▶ تشغيل';if(!V.ended&&model)status('متوقف مؤقتاً','st-wait')};
 V.onended=()=>{closeAll(V.duration);$('bPlay').textContent='▶ تشغيل';status('اكتمل التحليل','st-ok')};
 V.onseeking=()=>closeAll(Math.min(V.currentTime,tracks.reduce((m,k)=>Math.max(m,k.last),0)||V.currentTime));
-function syncTime(){drawTL();$('tm').textContent=fmt(V.currentTime)+' / '+fmt(V.duration);if(V.duration)$('seek').value=V.currentTime/V.duration*1000}
+function syncTime(){drawTL();const d=Number.isFinite(V.duration)&&V.duration>0?V.duration:0,t=Number.isFinite(V.currentTime)?V.currentTime:0;$('tm').textContent=fmt(t)+' / '+fmt(d);if(d)$('seek').value=Math.max(0,Math.min(1000,t/d*1000))}
 V.ontimeupdate=syncTime;
 $('bFull').onclick=()=>{const w=$('win');document.fullscreenElement?document.exitFullscreen():(w.requestFullscreen||w.webkitRequestFullscreen).call(w)};
 
@@ -406,8 +414,8 @@ function draw(){
   const sc=Math.min(w/vw,h/vh),ox=(w-vw*sc)/2,oy=(h-vh*sc)/2,t=V.currentTime;
   if($('tHeat').checked){let m=0;for(const v of heat)m=Math.max(m,v);if(m){const cw=vw*sc/48,ch=vh*sc/48;for(let i=0;i<2304;i++)if(heat[i]){X.fillStyle=`rgba(255,45,77,${Math.min(.65,heat[i]/m*.65)})`;X.fillRect(ox+(i%48)*cw,oy+(i/48|0)*ch,cw+1,ch+1)}}}
   X.font='600 12px Cairo,sans-serif';X.textBaseline='middle';
-  for(const k of tracks){
-    if(!k.ok||t-k.last>.6)continue;
+  for(const k of tracks.slice(-12)){
+    if(!k.ok||t-k.last>.8)continue;
     const c=k.cls==='egg_tray'?(k.sus>.5?'#ff2d4d':'#22c55e'):COL[cat(k.cls)],[x,y,bw,bh]=k.b,px=ox+x*sc,py=oy+y*sc;
     X.strokeStyle=c;X.lineWidth=2;X.strokeRect(px,py,bw*sc,bh*sc);
     if($('tTrail').checked&&k.tr&&k.tr.length>1){X.beginPath();k.tr.forEach((q,i)=>{const a=ox+q[0]*sc,b=oy+q[1]*sc;i?X.lineTo(a,b):X.moveTo(a,b)});X.globalAlpha=.7;X.stroke();X.globalAlpha=1}
@@ -422,7 +430,7 @@ async function tick(now){
   draw();
   if(model&&!busy&&!V.paused&&!V.ended&&V.readyState>=2&&now-last>=S.itv){
     busy=true;
-    try{const t=V.currentTime,dets=(await model.detect(V,25,S.thr)).concat(zoneDets());if(!V.paused)update(dets,t)}
+    try{const t=V.currentTime,dets=(await model.detect(V,12,S.thr)).concat(zoneDets());if(!V.paused)update(dets,t)}
     catch(e){status('خطأ أثناء التحليل','st-err')}
     busy=false;last=performance.now();
   }
@@ -430,8 +438,21 @@ async function tick(now){
 }
 requestAnimationFrame(tick);
 
+
+/* Pastel two-color themes */
+body[data-theme="sky-light"]{--bg:#dff4ff;--navy:#dff4ff;--navy2:#dff4ff;--line:#176b87;--red:#176b87;--cyan:#176b87;--green:#176b87;--amber:#176b87;--tx:#176b87;--mut:#176b87;background:#dff4ff}
+body[data-theme="mint-light"]{--bg:#ddf8ed;--navy:#ddf8ed;--navy2:#ddf8ed;--line:#176b50;--red:#176b50;--cyan:#176b50;--green:#176b50;--amber:#176b50;--tx:#176b50;--mut:#176b50;background:#ddf8ed}
+body[data-theme="lavender-light"]{--bg:#eee5ff;--navy:#eee5ff;--navy2:#eee5ff;--line:#56358c;--red:#56358c;--cyan:#56358c;--green:#56358c;--amber:#56358c;--tx:#56358c;--mut:#56358c;background:#eee5ff}
+body[data-theme="rose-light"]{--bg:#ffe5ed;--navy:#ffe5ed;--navy2:#ffe5ed;--line:#963653;--red:#963653;--cyan:#963653;--green:#963653;--amber:#963653;--tx:#963653;--mut:#963653;background:#ffe5ed}
+body[data-theme="peach-light"]{--bg:#ffeadb;--navy:#ffeadb;--navy2:#ffeadb;--line:#9a4d22;--red:#9a4d22;--cyan:#9a4d22;--green:#9a4d22;--amber:#9a4d22;--tx:#9a4d22;--mut:#9a4d22;background:#ffeadb}
+body[data-theme="lemon-light"]{--bg:#fff6cc;--navy:#fff6cc;--navy2:#fff6cc;--line:#756018;--red:#756018;--cyan:#756018;--green:#756018;--amber:#756018;--tx:#756018;--mut:#756018;background:#fff6cc}
+body[data-theme$="-light"] header,body[data-theme$="-light"] nav,body[data-theme$="-light"] .panel,body[data-theme$="-light"] .bar .panel,body[data-theme$="-light"] .stage,body[data-theme$="-light"] .win,body[data-theme$="-light"] .wh,body[data-theme$="-light"] .ctl,body[data-theme$="-light"] .ev,body[data-theme$="-light"] .btn,body[data-theme$="-light"] .ib,body[data-theme$="-light"] dialog{background:var(--bg);color:var(--tx);border-color:var(--line);box-shadow:none}
+body[data-theme$="-light"] .btn.red,body[data-theme$="-light"] .btn.blue,body[data-theme$="-light"] nav button.on{background:var(--line);color:var(--bg)}
+body[data-theme$="-light"] .theme-option{background:var(--bg);color:var(--tx);border-color:var(--line)}
+body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-theme$="-light"] .priv,body[data-theme$="-light"] .dev,body[data-theme$="-light"] .bar small{color:var(--tx)}
+
 /* ---------- مبدّل ألوان الموقع ---------- */
-const themeNames=['blue-yellow','purple-orange','black-red','green-black','navy-cyan','pink-purple','burgundy-gold','teal-coral'];
+const themeNames=['blue-yellow','purple-orange','black-red','green-black','navy-cyan','pink-purple','burgundy-gold','teal-coral','sky-light','mint-light','lavender-light','rose-light','peach-light','lemon-light'];
 function setTheme(name){
   if(!themeNames.includes(name))name='blue-yellow';
   document.body.dataset.theme=name;
