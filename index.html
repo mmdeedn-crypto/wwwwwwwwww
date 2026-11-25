@@ -308,7 +308,7 @@ const V=$('v'),C=$('c'),X=C.getContext('2d'),stage=$('stage'),capCanvas=document
 const S={interval:6000,confidence:35},MODEL='egg-crack-detection-eu65a/1';
 let apiKey='',busy=false,lastScan=0,tracks=[],events=[],nextId=1,current=[];
 const fmt=t=>{t=Number(t);if(!Number.isFinite(t)||t<0)return'00:00:00';t=Math.floor(t);return[String(Math.floor(t/3600)),String(Math.floor(t/60)%60),String(t%60)].map(n=>n.padStart(2,'0')).join(':')};
-function status(t,c='st-wait'){$('sSt').textContent=t;$('sSt').className=c}
+function status(t,c='st-wait'){$('sSt').textContent=t;$('sSt').className=c;$('bRetry').hidden=c!=='st-err'}
 function notice(t){$('analysisNotice').textContent=t}
 function renderAll(){renderStats();renderEggStatuses();renderLog();drawTL()}
 function resetResults(){tracks=[];events=[];current=[];nextId=1;renderAll();draw()}
