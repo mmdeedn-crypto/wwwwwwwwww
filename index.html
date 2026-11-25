@@ -203,6 +203,11 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
       <div class="leg" id="leg"></div></div>
     <div class="sum" id="sum">لم يتم اكتشاف أي عنصر بعد.</div>
   </section>
+  <section class="panel">
+    <div class="lh"><h2>حالة مجموعات البيض</h2><span class="muted" id="eggGroupCount">0 مجموعة</span></div>
+    <div id="eggStatusList" style="display:grid;gap:8px;padding:10px 0"><p class="muted">شغّل الفيديو لعرض حالة كل مجموعة يتم رصدها.</p></div>
+    <p class="muted" style="font-size:11px;line-height:1.7">الحالة مبنية على مقارنة لون الصواني الظاهرة ببعضها، وليست فحصاً مؤكداً لسلامة البيض أو اكتشاف الكسر.</p>
+  </section>
   <section class="panel"><div class="lh"><h2>سجل الأحداث</h2><span style="display:flex;gap:6px"><button class="btn" id="bRep" style="padding:5px 12px">تقرير PDF</button><button class="btn" id="bCsv" style="padding:5px 12px">CSV</button></span></div>
     <div id="log"><p class="muted">اضغط على حدث للانتقال إلى توقيته في الفيديو.</p></div></section>
 </aside>
@@ -284,7 +289,7 @@ body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-them
 
 <dialog id="dSet"><h2>إعدادات التحليل</h2>
   <label>حد الثقة الأدنى: <b id="thV">50%</b></label><input type="range" id="thr" min="30" max="90" value="50">
-  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="350">كل 350 مللي ثانية (سريع)</option><option value="600">كل 600 مللي ثانية (متوازن)</option><option value="900" selected>كل 900 مللي ثانية (أنسب للهاتف)</option></select>
+  <label>الفاصل بين الفحوصات</label><select id="itv"><option value="800">كل 800 مللي ثانية (سريع)</option><option value="1500" selected>كل 1.5 ثانية (متوازن)</option><option value="2500">كل 2.5 ثانية (أخف على الجهاز)</option></select>
   <p class="muted" style="margin-top:10px">تُطبَّق التغييرات فوراً على الفحوصات القادمة.</p>
   <button class="btn blue" style="margin-top:14px" onclick="this.closest('dialog').close()">تم</button></dialog>
 <dialog id="dAbout"><h2>ALEX GUARD AI</h2>
@@ -296,12 +301,13 @@ body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-them
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
 <script>
 const $=s=>document.getElementById(s);
-const V=$('v'),C=$('c'),X=C.getContext('2d');
+const V=$('v'),C=$('c'),X=C.getContext('2d'),st=$('stage');
+const IC=document.createElement('canvas'),IX=IC.getContext('2d',{willReadFrequently:true});
 const AR={egg_tray:'صينية بيض',person:'عامل/شخص',car:'سيارة',truck:'شاحنة',bus:'حافلة',motorcycle:'دراجة نارية',bicycle:'دراجة',airplane:'طائرة',train:'قطار',boat:'قارب',bird:'طائر',cat:'قطة',dog:'كلب',horse:'حصان',sheep:'خروف',cow:'بقرة',elephant:'فيل',bear:'دب',zebra:'حمار وحشي',giraffe:'زرافة',backpack:'حقيبة ظهر',handbag:'حقيبة يد',bottle:'زجاجة',chair:'كرسي','cell phone':'هاتف',laptop:'حاسوب محمول','traffic light':'إشارة مرور'};
 const CAT={person:'p',egg_tray:'e'};'car truck bus motorcycle bicycle airplane train boat'.split(' ').forEach(k=>CAT[k]='v');'bird cat dog horse sheep cow elephant bear zebra giraffe'.split(' ').forEach(k=>CAT[k]='a');
 const COL={e:'#fbbf24',p:'#ff2d4d',v:'#22d3ee',a:'#34d399',o:'#fbbf24'},CN={e:'صواني بيض',p:'عمال/أشخاص',v:'مركبات',a:'حيوانات',o:'أشياء أخرى'};
 const cat=k=>CAT[k]||'o',ar=k=>AR[k]||k;
-const S={thr:.5,itv:900};
+const S={thr:.5,itv:1500};
 const series=new Map(),heat=new Float32Array(2304);let vname='';
 let model=null,busy=false,last=0,lastDraw=0,url=null,tracks=[],done=[],events=[],nid=1;
 
@@ -383,8 +389,8 @@ function zoneDets(){
   const vw=V.videoWidth,vh=V.videoHeight;if(!vw)return[];
   ZC.width=288;ZC.height=Math.round(288*vh/vw);ZX.drawImage(V,0,0,ZC.width,ZC.height);
   const k=vw/288,cs=findTrays(ZX.getImageData(0,0,ZC.width,ZC.height).data,ZC.width,ZC.height,3);
-  const hs=cs.map(c=>c.h).sort((a,b)=>a-b),ref=hs.length>=3?hs[hs.length>>1]:16.5;
-  return cs.map(c=>({class:'egg_tray',score:1,sus:hs.length>=3?Math.abs(c.h-ref)>=2.5:null,bbox:c.bbox.map(v=>v*k)}));
+  const hs=cs.map(c=>c.h).sort((a,b)=>a-b),mid=hs.length>>1,ref=hs.length?(hs.length%2?hs[mid]:(hs[mid-1]+hs[mid])/2):16.5;
+  return cs.map(c=>({class:'egg_tray',score:1,sus:hs.length>=2?Math.abs(c.h-ref)>=2.5:null,bbox:c.bbox.map(v=>v*k)}));
 }
 /* ---------- التتبع ---------- */
 function iou(a,b){const x=Math.max(a[0],b[0]),y=Math.max(a[1],b[1]),X2=Math.min(a[0]+a[2],b[0]+b[2]),Y2=Math.min(a[1]+a[3],b[1]+b[3]);const i=Math.max(0,X2-x)*Math.max(0,Y2-y);return i/(a[2]*a[3]+b[2]*b[3]-i||1)}
@@ -400,10 +406,10 @@ function update(dets,t){
     if(!best.ok&&best.hits>=3){best.ok=true;done.push(best);addEv(best.first,'ظهور',best)}
   }
   tracks=tracks.filter(k=>{if(t-k.last>1.5){if(k.ok)addEv(k.last,'اختفاء',k);return false}return true});
-  sample(t);renderStats();drawTL();
+  sample(t);renderStats();renderEggStatuses();drawTL();
 }
 function closeAll(t){tracks.forEach(k=>{if(k.ok)addEv(Math.max(k.last,Math.min(t,k.last+1.5)),'اختفاء',k)});tracks=[];renderStats()}
-function resetResults(){series.clear();heat.fill(0);setTimeout(drawTL);tracks=[];done=[];events=[];nid=1;renderLog();renderStats()}
+function resetResults(){series.clear();heat.fill(0);setTimeout(drawTL);tracks=[];done=[];events=[];nid=1;renderLog();renderStats();renderEggStatuses()}
 
 /* ---------- العرض ---------- */
 function renderLog(){
@@ -414,6 +420,17 @@ function renderLog(){
     b.innerHTML=`<span class="sw" style="background:${COL[cat(e.cls)]}"></span><span>${e.type} ${ar(e.cls)} #${e.id}</span><span class="t">${fmt(e.t)}</span>`;
     b.onclick=()=>{V.currentTime=e.t};L.appendChild(b)});
   L.scrollTop=L.scrollHeight;
+}
+function renderEggStatuses(){
+  const groups=done.filter(k=>k.cls==='egg_tray').slice(-12).reverse();
+  $('eggGroupCount').textContent=groups.length+' مجموعة';
+  if(!groups.length){$('eggStatusList').innerHTML='<p class="muted">لم يتم رصد مجموعات بيض بعد. شغّل الفيديو وانتظر ظهور مربعات الكشف.</p>';return}
+  $('eggStatusList').innerHTML=groups.map(k=>{
+    const unknown=k.sus===null||k.sus===undefined;
+    const label=unknown?'مقارنة غير كافية':k.sus>.5?'انحراف لوني — يحتاج فحصاً':'لون قريب من متوسط الصواني';
+    const color=unknown?'#94a3b8':k.sus>.5?'#ff2d4d':'#22c55e';
+    return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:9px 10px;border:1px solid var(--line);border-right:4px solid '+color+';border-radius:9px;background:var(--navy2)"><b>مجموعة البيض #'+k.id+'</b><span style="color:'+color+';font-weight:700">'+label+'</span><small class="muted">مرات الرصد: '+k.hits+'</small></div>';
+  }).join('');
 }
 function renderStats(){
   const n={p:0,e:0,v:0,a:0,o:0},kinds={};
@@ -429,7 +446,7 @@ function renderStats(){
   $('sum').innerHTML=ks.length?`<b>${ks.length} نوع مكتشف:</b> `+ks.map(k=>`${ar(k)} (${kinds[k]})`).join('، '):'لم يتم اكتشاف أي عنصر بعد.';
   if(n.p)$('sum').innerHTML+=`<br>إجمالي زمن ظهور الأشخاص: ${done.filter(k=>k.cls==='person').reduce((q,k)=>q+Math.max(0,k.last-k.first),0).toFixed(1)} ثانية`;
 }
-renderStats();
+renderStats();renderEggStatuses();
 
 function draw(){
   const w=C.clientWidth,h=C.clientHeight,d=devicePixelRatio||1;
@@ -452,10 +469,10 @@ function draw(){
 new ResizeObserver(draw).observe(st);
 
 async function tick(now){
-  if(now-lastDraw>=100){draw();lastDraw=now;}
+  if(now-lastDraw>=150){draw();lastDraw=now;}
   if(model&&!busy&&!V.paused&&!V.ended&&V.readyState>=2&&now-last>=S.itv){
     busy=true;
-    try{const t=V.currentTime,dets=(await model.detect(V,5,S.thr)).concat(zoneDets());if(!V.paused)update(dets,t)}
+    try{const t=V.currentTime,iw=320,ih=Math.max(1,Math.round(iw*V.videoHeight/V.videoWidth));IC.width=iw;IC.height=ih;IX.drawImage(V,0,0,iw,ih);const scale=V.videoWidth/iw,raw=await model.detect(IC,5,S.thr),dets=raw.map(d=>({...d,bbox:d.bbox.map(v=>v*scale)})).concat(zoneDets());if(!V.paused)update(dets,t)}
     catch(e){status('خطأ أثناء التحليل','st-err')}
     busy=false;last=performance.now();
   }
