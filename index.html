@@ -125,7 +125,16 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
  html,body{color:var(--tx)}
 }
 
-</style>
+
+.egg-reference{margin-top:14px;direction:rtl}
+.egg-ref-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:12px}
+.egg-ref-grid figure{margin:0;min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:var(--navy2)}
+.egg-ref-grid img{display:block;width:100%;height:210px;object-fit:contain;background:#101827}
+.egg-ref-grid figcaption{padding:10px;display:grid;gap:4px}
+.egg-ref-grid figcaption small{font-size:11px;color:var(--mut);line-height:1.7}
+.egg-reference a{color:var(--cyan);text-decoration:underline}
+@media(max-width:620px){.egg-ref-grid{grid-template-columns:1fr}.egg-ref-grid img{height:190px}}
+\n</style>
 </head>
 <body>
 <div class="app">
@@ -170,6 +179,15 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
     <div class="muted" style="padding:6px 12px;background:var(--navy);border-top:1px solid var(--line);font-size:12px">🟩 لون قريب من بقية الصواني · 🟥 انحراف لوني يحتاج فحص · ⬜ مقارنة غير كافية. هذا فحص لوني تقريبي وليس كشفاً مؤكداً للكسر.</div>
   </section>
   </div>
+  <section class="panel egg-reference" id="eggReference">
+    <div class="lh"><h2>مكتبة الصور المرجعية — فحص قشرة البيض</h2><span class="muted">أمثلة بحثية</span></div>
+    <p class="muted" style="padding:10px 14px">هذه الصور للمراجعة البصرية فقط، وليست نموذج ذكاء اصطناعي مدرّباً. لا تصدر المنصة حكماً على البيض اعتماداً على هذه الصور المرجعية.</p>
+    <div class="egg-ref-grid">
+      <figure><img loading="lazy" src="https://media.springernature.com/lw1200/springer-static/image/art%3A10.1007%2Fs44187-025-00604-2/MediaObjects/44187_2025_604_Fig13_HTML.png" alt="أمثلة بحثية لقشرة بيض سليمة ومتشققة ومراحل تحليل الشقوق"><figcaption><b>أمثلة سليمة ومتشققة</b><small>شكل بحثي يوضح البيض دون شقوق، والشقوق المفردة والمتعددة والثقوب.</small></figcaption></figure>
+      <figure><img loading="lazy" src="https://source.roboflow.com/2RATb7xNNiZH3K6TPqR4AYly2tA2/06HRcKzi2M0r5DJLC1vL/original.jpg" alt="بيضة بنية عليها شق واضح"><figcaption><b>مثال بيضة متشققة</b><small>صورة من مجموعة Egg Crack Detection.</small></figcaption></figure>
+    </div>
+    <div class="muted" style="padding:8px 14px;font-size:11px">المصادر: <a href="https://link.springer.com/article/10.1007/s44187-025-00604-2" target="_blank" rel="noopener">بحث Springer Nature (2025)</a> · <a href="https://universe.roboflow.com/lakshmi-kaviti-xyhms/egg-crack-detection-k65q0" target="_blank" rel="noopener">مجموعة صور Roboflow</a></div>
+  </section>
   <section class="panel"><div class="lh" style="flex-wrap:wrap;gap:6px"><h2>المخطط الزمني للعناصر</h2><span class="muted">اضغط للانتقال · <b style="color:#ff2d4d">أشخاص</b> <b style="color:#22d3ee">مركبات</b> <b style="color:#34d399">حيوانات</b> <b style="color:#fbbf24">أخرى</b></span></div><canvas id="tl" style="width:100%;height:120px;display:block;cursor:pointer;border-radius:8px"></canvas></section>
   <input type="file" id="file" accept="video/*" hidden>
 </main>
