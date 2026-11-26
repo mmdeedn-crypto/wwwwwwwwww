@@ -313,7 +313,8 @@ function notice(t){$('analysisNotice').textContent=t}
 function renderAll(){renderStats();renderEggStatuses();renderLog();drawTL()}
 function resetResults(){tracks=[];events=[];current=[];trayGroups=[];nextId=1;renderAll();draw()}
 function loadGithubVideo(){V.pause();resetResults();V.src='eggs.mp4';V.load();notice(apiKey?'جاهز — شغّل الفيديو لبدء فحص الشقوق.':'أدخل مفتاح Roboflow من الإعدادات لتفعيل كشف الشقوق.')}
-function syncTime(){const d=Number.isFinite(V.duration)?V.duration:0,t=V.currentTime||0;$('tm').textContent=fmt(t)+' / '+fmt(d);$('seek').value=d?Math.min(1000,t/d*1000):0;drawTL()}
+let lastTimelinePaint=0;
+function syncTime(){const d=Number.isFinite(V.duration)?V.duration:0,t=V.currentTime||0;$('tm').textContent=fmt(t)+' / '+fmt(d);$('seek').value=d?Math.min(1000,t/d*1000):0;const now=performance.now();if(now-lastTimelinePaint>=1000){lastTimelinePaint=now;drawTL()}}
 function fitVideoFrame(){if(!V.videoWidth)return;stage.style.aspectRatio=V.videoWidth+'/'+V.videoHeight;stage.style.maxHeight=matchMedia('(max-width:560px)').matches?'42vh':matchMedia('(max-width:1100px)').matches?'48vh':'min(52vh,560px)';draw()}
 V.addEventListener('loadedmetadata',()=>{$('sDur').textContent=fmt(V.duration);syncTime();fitVideoFrame();status(apiKey?'جاهز للفحص':'بانتظار مفتاح النموذج',apiKey?'st-ok':'st-wait')});
 V.addEventListener('timeupdate',()=>{syncTime();draw();if(apiKey&&!V.paused&&!V.ended&&V.readyState>=2&&!busy&&V.currentTime*1000-lastScanVideoMs>=S.interval){lastScanVideoMs=V.currentTime*1000;analyzeFrame()}});
@@ -385,7 +386,7 @@ async function analyzeFrame(){
  finally{busy=false}
 }
 function draw(){
- const w=C.clientWidth,h=C.clientHeight,d=Math.min(1.15,devicePixelRatio||1);
+ const w=C.clientWidth,h=C.clientHeight,d=Math.min(1,devicePixelRatio||1);
  if(!w||!h)return;
  if(C.width!==Math.round(w*d)||C.height!==Math.round(h*d)){C.width=Math.round(w*d);C.height=Math.round(h*d)}
  X.setTransform(d,0,0,d,0,0);X.clearRect(0,0,w,h);
@@ -413,9 +414,9 @@ function draw(){
   const position=ratio<.34?'يسار الخط':ratio>.66?'يمين الخط':'وسط الخط';
   const confidence=Number(p.confidence)||0;
   let phrase;
-  if(confidence>=.85)phrase='هاي كسرتي واضحة.. لا تمرروني 😂';
-  else if(confidence>=.70)phrase='دققوا عليّ.. شكلي مشروخة 😅';
-  else phrase='يمكن بيّه شق.. أحتاج فحص 👀';
+  if(confidence>=.85)phrase='شق واضح بالبيضة 🔴';
+  else if(confidence>=.70)phrase='احتمال كسر بالبيضة 🟠';
+  else phrase='اشتباه شق — يحتاج تدقيق 👀';
   return position+' · '+phrase;
  }
  // كل عبارة ترتبط بصندوقها، ونختار أقرب موضع خالٍ لتجنب تداخل العبارات
