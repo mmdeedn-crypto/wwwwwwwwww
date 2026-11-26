@@ -405,9 +405,6 @@ function draw(force=false){
  }
  // اختيار العبارة حسب موضع البيضة وثقة النموذج في هذه اللقطة، لا حسب رقم البيضة.
  function phraseForCrack(p){
-  const centerX=p.box[0]+p.box[2]/2,videoW=V.videoWidth||1;
-  const ratio=centerX/videoW;
-  const position=ratio<.34?'يسار الخط':ratio>.66?'يمين الخط':'وسط الخط';
   const phrases=[
    'أني هنااا مكسورة 😭',
    'يمعود شوفوني.. مشروخة 😂',
@@ -421,21 +418,21 @@ function draw(force=false){
    'يمعود لا تحسبني سليمة!'
   ];
   const index=Math.max(0,(Math.abs(Number(p.id)||1)-1)%phrases.length);
-  return position+' · '+phrases[index];
+  return phrases[index];
  }
  // كل عبارة ترتبط بصندوقها، ونختار أقرب موضع خالٍ لتجنب تداخل العبارات
  for(const p of current){
   const [x,y,bw,bh]=p.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label=phraseForCrack(p);
-  X.save();X.font='800 13px Cairo,sans-serif';X.direction='rtl';
-  const tw=Math.min(Math.max(150,X.measureText(label).width+22),Math.max(120,w-8)),th=30;
+  X.save();X.font='900 15px Cairo,sans-serif';X.direction='rtl';
+  const tw=Math.min(Math.max(166,X.measureText(label).width+28),Math.max(130,w-12)),th=38;
   const cx=px+ww/2,cy=py+hh/2,gap=8;
   const candidates=[
    {x:cx-tw/2,y:py-th-gap,side:'top'},
    {x:cx-tw/2,y:py+hh+gap,side:'bottom'},
    {x:px-tw-gap,y:cy-th/2,side:'left'},
    {x:px+ww+gap,y:cy-th/2,side:'right'},
-   {x:cx-tw/2,y:py-th-gap-31,side:'top'},
-   {x:cx-tw/2,y:py+hh+gap+31,side:'bottom'}
+   {x:cx-tw/2,y:py-th-gap-39,side:'top'},
+   {x:cx-tw/2,y:py+hh+gap+39,side:'bottom'}
   ].map(a=>({...a,x:clamp(a.x,4,w-tw-4),y:clamp(a.y,4,h-th-4)}));
   let chosen=null,best=Infinity;
   for(const a of candidates){
@@ -453,7 +450,7 @@ function draw(force=false){
   const targetY=chosen.side==='top'?py:chosen.side==='bottom'?py+hh:cy;
   X.strokeStyle='#ff6b75';X.lineWidth=1.8;X.beginPath();X.moveTo(anchorX,anchorY);X.lineTo(clamp(targetX,0,w),clamp(targetY,0,h));X.stroke();
   X.fillStyle='#c91f39';X.beginPath();X.roundRect(tx,ty,tw,th,7);X.fill();
-  X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(label,tx+tw/2,ty+th/2,tw-10);
+  X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(label,tx+tw/2,ty+th/2,tw-18);
   X.restore();placed.push(chosen.rect);
  }
  if(V.currentTime>=3&&V.currentTime<=7){
