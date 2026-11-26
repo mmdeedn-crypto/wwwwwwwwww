@@ -382,7 +382,7 @@ async function analyzeFrame(){
   updateTracks(p,capturedTime,V.videoWidth/w,V.videoHeight/h);
   notice(p.length?'رصد النموذج '+p.length+' احتمال شق بعد استبعاد المربعات الكبيرة المشبوهة.':'ماكو شق مؤكد بهاللقطة؛ هذا مو دليل أن كل البيض سليم.');
   status('آخر فحص '+fmt(capturedTime)+' · '+p.length+' رصد مقبول','st-run');
- }catch(e){status('فشل فحص Roboflow','st-err');notice('تعذّر الفحص: '+(e.message||'تحقق من المفتاح والإنترنت')+' — الفيديو يستمر بالتشغيل.')}
+ }catch(e){status('فشل فحص Roboflow','st-err');notice('تعذّر فحص البيض. تأكد من مفتاح Roboflow والإنترنت؛ الفيديو يستمر بالتشغيل.')}
  finally{busy=false}
 }
 let lastOverlayPaint=0;
@@ -397,17 +397,10 @@ function draw(force=false){
  const placed=[];
  const overlaps=(a,b,pad=5)=>!(a.x+a.w+pad<=b.x||b.x+b.w+pad<=a.x||a.y+a.h+pad<=b.y||b.y+b.h+pad<=a.y);
  const clamp=(v,min,max)=>Math.max(min,Math.min(v,max));
- // ارسم حدود المجموعات أولاً حتى تبقى واضحة خلف تسميات البيض
+ // حدود المجموعات فقط؛ لا نضع تسميات عامة فوق العبارات الفردية
  for(const g of trayGroups){
-  const [x,y,bw,bh]=g.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label='مجموعة مشتبه بها · '+g.eggCount+' شق';
-  X.save();X.strokeStyle='#f59e0b';X.lineWidth=3;X.setLineDash([7,4]);X.strokeRect(px-5,py-5,ww+10,hh+10);X.setLineDash([]);
-  X.font='700 11px Cairo,sans-serif';
-  const tw=Math.min(Math.max(110,X.measureText(label).width+16),Math.max(110,w-8));
-  let tx=clamp(px,w-tw-4),ty=clamp(py-25,4,h-24);
-  const box={x:tx,y:ty,w:tw,h:20};
-  X.fillStyle='#a85b00';X.beginPath();X.roundRect(tx,ty,tw,20,5);X.fill();
-  X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(label,tx+tw/2,ty+10,tw-10);X.restore();
-  placed.push(box);
+  const [x,y,bw,bh]=g.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc;
+  X.save();X.strokeStyle='#f59e0b';X.lineWidth=3;X.setLineDash([7,4]);X.strokeRect(px-5,py-5,ww+10,hh+10);X.setLineDash([]);X.restore();
  }
  // اختيار العبارة حسب موضع البيضة وثقة النموذج في هذه اللقطة، لا حسب رقم البيضة.
  function phraseForCrack(p){
@@ -426,14 +419,14 @@ function draw(force=false){
    'شوفوا الشق مالتي واضح 😂',
    'يمعود لا تحسبني سليمة!'
   ];
-  const index=Math.abs(Number(p.id)||0)%phrases.length;
+  const index=Math.max(0,(Math.abs(Number(p.id)||1)-1)%phrases.length);
   return position+' · '+phrases[index];
  }
  // كل عبارة ترتبط بصندوقها، ونختار أقرب موضع خالٍ لتجنب تداخل العبارات
  for(const p of current){
   const [x,y,bw,bh]=p.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label=phraseForCrack(p);
-  X.save();X.font='700 11px Cairo,sans-serif';X.direction='rtl';
-  const tw=Math.min(Math.max(112,X.measureText(label).width+18),Math.max(112,w-8)),th=25;
+  X.save();X.font='800 13px Cairo,sans-serif';X.direction='rtl';
+  const tw=Math.min(Math.max(150,X.measureText(label).width+22),Math.max(120,w-8)),th=30;
   const cx=px+ww/2,cy=py+hh/2,gap=8;
   const candidates=[
    {x:cx-tw/2,y:py-th-gap,side:'top'},
