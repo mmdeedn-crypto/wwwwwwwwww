@@ -536,7 +536,7 @@ analyzeFrame=async function(){
    const res=await fetch(url,{method:'POST',body:form});
    if(!res.ok){let m='HTTP '+res.status;try{const q=await res.json();m=q.message||q.error||m}catch(e){}throw Error(m)}
    const out=await res.json(),raw=Array.isArray(out.predictions)?out.predictions:[];hasRealScan=true;
-   const p=raw.filter(q=>Number(q.confidence)>=Math.max(.30,S.confidence/100)&&q.width>0&&q.height>0&&(q.width*q.height)/(w*h)<.55&&q.width/w<.90&&q.height/h<.90);
+   const p=raw.filter(q=>Number(q.confidence)>=.55&&q.width>0&&q.height>0&&(q.width*q.height)/(w*h)<.22&&q.width/w<.75&&q.height/h<.75);
    /* تحديث الواجهة بعد انتهاء مهمة الشبكة، في إطار رسم منفصل */
    requestAnimationFrame(()=>{
      updateTracks(p,capturedTime,V.videoWidth/w,V.videoHeight/h);
