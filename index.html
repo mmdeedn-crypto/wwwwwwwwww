@@ -383,7 +383,16 @@ async function analyzeFrame(){
   updateTracks(p,capturedTime,V.videoWidth/w,V.videoHeight/h);
   notice(p.length?'رصد النموذج '+p.length+' احتمال شق بعد استبعاد المربعات الكبيرة المشبوهة.':'ماكو شق مؤكد بهاللقطة؛ هذا مو دليل أن كل البيض سليم.');
   status('آخر فحص '+fmt(capturedTime)+' · '+p.length+' رصد مقبول','st-run');
- }catch(e){status('فشل فحص Roboflow','st-err');notice('تعذّر فحص البيض. تأكد من مفتاح Roboflow والإنترنت؛ الفيديو يستمر بالتشغيل.')}
+ }catch(e){
+  const msg=String(e&&e.message||'');
+  let friendly='تعذّر الاتصال بخدمة الفحص. تحقق من إعدادات النموذج والإنترنت.';
+  if(/401|unauthorized|api.?key|invalid key/i.test(msg))friendly='مفتاح Roboflow غير صحيح أو غير صالح. افتح الإعدادات وأعد حفظ المفتاح.';
+  else if(/403|forbidden/i.test(msg))friendly='المفتاح لا يملك صلاحية الوصول إلى النموذج.';
+  else if(/404|not found/i.test(msg))friendly='عنوان النموذج أو رقم الإصدار غير موجود.';
+  else if(/429|rate.?limit/i.test(msg))friendly='طلبات الفحص كثيرة. انتظر قليلاً ثم أعد المحاولة.';
+  else if(/failed to fetch|networkerror|load failed/i.test(msg))friendly='تعذّر الوصول إلى Roboflow. تحقق من الإنترنت أو اتصال المتصفح.';
+  status('فشل الفحص — راجع رسالة التشخيص','st-err');notice(friendly+' الفيديو يستمر بالتشغيل.');
+ }
  finally{busy=false}
 }
 let lastOverlayPaint=0;
