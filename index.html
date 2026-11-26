@@ -306,7 +306,7 @@ body[data-theme$="-light"] .muted,body[data-theme$="-light"] .sum,body[data-them
 <script>
 const $=s=>document.getElementById(s);
 const V=$('v'),C=$('c'),X=C.getContext('2d'),stage=$('stage'),capCanvas=document.createElement('canvas'),cap=capCanvas.getContext('2d');
-const S={interval:60000,confidence:50},MODEL='egg-crack-detection-eu65a/1';
+const S={interval:60000,confidence:65},MODEL='egg-crack-detection-eu65a/1';
 let apiKey='',busy=false,lastScan=0,tracks=[],events=[],nextId=1,current=[],trayGroups=[],lastDetectionVideoTime=-999,hasRealScan=false;
 const fmt=t=>{t=Number(t);if(!Number.isFinite(t)||t<0)return'00:00:00';t=Math.floor(t);return[String(Math.floor(t/3600)),String(Math.floor(t/60)%60),String(t%60)].map(n=>n.padStart(2,'0')).join(':')};
 function status(t,c='st-wait'){$('sSt').textContent=t;$('sSt').className=c;$('bRetry').hidden=c!=='st-err'}
@@ -319,7 +319,7 @@ function syncTime(){const d=Number.isFinite(V.duration)?V.duration:0,t=V.current
 function fitVideoFrame(){if(!V.videoWidth)return;stage.style.aspectRatio=V.videoWidth+'/'+V.videoHeight;stage.style.maxHeight=matchMedia('(max-width:560px)').matches?'42vh':matchMedia('(max-width:1100px)').matches?'48vh':'min(52vh,560px)';draw()}
 V.addEventListener('loadedmetadata',()=>{$('sDur').textContent=fmt(V.duration);syncTime();fitVideoFrame();status(apiKey?'جاهز للفحص':'بانتظار مفتاح النموذج',apiKey?'st-ok':'st-wait')});
 V.addEventListener('timeupdate',()=>{syncTime();draw();if(apiKey&&!V.paused&&!V.ended&&V.readyState>=2&&!busy&&V.currentTime*1000-lastScanVideoMs>=S.interval){lastScanVideoMs=V.currentTime*1000;analyzeFrame()}});
-V.addEventListener('play',()=>{$('bPlay').textContent='⏸ إيقاف مؤقت';status(apiKey?'الفيديو يعمل — الفحص بالخلفية':'الفيديو يعمل — الكشف غير مفعّل',apiKey?'st-run':'st-wait');if(apiKey)setTimeout(()=>analyzeFrame(),250)});
+V.addEventListener('play',()=>{$('bPlay').textContent='⏸ إيقاف مؤقت';status(apiKey?'الفيديو يعمل — الفحص بالخلفية':'الفيديو يعمل — الكشف غير مفعّل',apiKey?'st-run':'st-wait')});
 V.addEventListener('pause',()=>{$('bPlay').textContent='▶ تشغيل';if(!V.ended)status('متوقف مؤقتاً','st-wait')});
 V.addEventListener('ended',()=>{$('bPlay').textContent='▶ تشغيل';status('انتهى الفيديو','st-ok')});
 V.addEventListener('error',()=>{status('تعذّر تحميل eggs.mp4','st-err');notice('تعذّر تحميل فيديو GitHub. أعد تحميل الصفحة أو اضغط زر إعادة تحميل الفيديو.')});
@@ -374,12 +374,12 @@ async function analyzeFrame(){
   capCanvas.width=w;capCanvas.height=h;cap.drawImage(V,0,0,w,h);
   const blob=await new Promise(resolve=>capCanvas.toBlob(resolve,'image/jpeg',.20));
   if(!blob)throw Error('تعذّر تجهيز صورة الفحص');
-  const url='https://detect.roboflow.com/'+MODEL+'?api_key='+encodeURIComponent(apiKey)+'&confidence='+Math.max(30,S.confidence)+'&overlap=25';
+  const url='https://detect.roboflow.com/'+MODEL+'?api_key='+encodeURIComponent(apiKey)+'&confidence='+Math.max(55,S.confidence)+'&overlap=25';
   const form=new FormData();form.append('file',blob,'frame.jpg');
   const res=await fetch(url,{method:'POST',body:form});
   if(!res.ok){let m='HTTP '+res.status;try{const q=await res.json();m=q.message||q.error||m}catch(e){}throw Error(m)}
   const out=await res.json(),raw=Array.isArray(out.predictions)?out.predictions:[];hasRealScan=true;
-  const p=raw.filter(q=>Number(q.confidence)>=Math.max(.30,S.confidence/100)&&q.width>0&&q.height>0&&(q.width*q.height)/(w*h)<.55&&q.width/w<.90&&q.height/h<.90);
+  const p=raw.filter(q=>Number(q.confidence)>=.55&&q.width>0&&q.height>0&&(q.width*q.height)/(w*h)<.22&&q.width/w<.75&&q.height/h<.75);
   updateTracks(p,capturedTime,V.videoWidth/w,V.videoHeight/h);
   notice(p.length?'رصد النموذج '+p.length+' احتمال شق بعد استبعاد المربعات الكبيرة المشبوهة.':'ماكو شق مؤكد بهاللقطة؛ هذا مو دليل أن كل البيض سليم.');
   status('آخر فحص '+fmt(capturedTime)+' · '+p.length+' رصد مقبول','st-run');
