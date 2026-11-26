@@ -316,7 +316,7 @@ function loadGithubVideo(){V.pause();resetResults();V.src='eggs.mp4';V.load();no
 function syncTime(){const d=Number.isFinite(V.duration)?V.duration:0,t=V.currentTime||0;$('tm').textContent=fmt(t)+' / '+fmt(d);$('seek').value=d?Math.min(1000,t/d*1000):0;drawTL()}
 function fitVideoFrame(){if(!V.videoWidth)return;stage.style.aspectRatio=V.videoWidth+'/'+V.videoHeight;stage.style.maxHeight=matchMedia('(max-width:560px)').matches?'42vh':matchMedia('(max-width:1100px)').matches?'48vh':'min(52vh,560px)';draw()}
 V.addEventListener('loadedmetadata',()=>{$('sDur').textContent=fmt(V.duration);syncTime();fitVideoFrame();status(apiKey?'جاهز للفحص':'بانتظار مفتاح النموذج',apiKey?'st-ok':'st-wait')});
-V.addEventListener('timeupdate',()=>{syncTime();if(V.currentTime-lastDetectionVideoTime>1.25&&current.length){current=[];trayGroups=[];renderAll()}draw();if(apiKey&&!V.paused&&!V.ended&&V.readyState>=2&&!busy&&V.currentTime*1000-lastScanVideoMs>=S.interval){lastScanVideoMs=V.currentTime*1000;analyzeFrame()}});
+V.addEventListener('timeupdate',()=>{syncTime();draw();if(apiKey&&!V.paused&&!V.ended&&V.readyState>=2&&!busy&&V.currentTime*1000-lastScanVideoMs>=S.interval){lastScanVideoMs=V.currentTime*1000;analyzeFrame()}});
 V.addEventListener('play',()=>{$('bPlay').textContent='⏸ إيقاف مؤقت';status(apiKey?'الفيديو يعمل — الفحص بالخلفية':'الفيديو يعمل — الكشف غير مفعّل',apiKey?'st-run':'st-wait')});
 V.addEventListener('pause',()=>{$('bPlay').textContent='▶ تشغيل';if(!V.ended)status('متوقف مؤقتاً','st-wait')});
 V.addEventListener('ended',()=>{$('bPlay').textContent='▶ تشغيل';status('انتهى الفيديو','st-ok')});
