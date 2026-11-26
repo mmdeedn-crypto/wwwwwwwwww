@@ -414,12 +414,20 @@ function draw(force=false){
   const centerX=p.box[0]+p.box[2]/2,videoW=V.videoWidth||1;
   const ratio=centerX/videoW;
   const position=ratio<.34?'يسار الخط':ratio>.66?'يمين الخط':'وسط الخط';
-  const confidence=Number(p.confidence)||0;
-  let phrase;
-  if(confidence>=.85)phrase='شق واضح بالبيضة 🔴';
-  else if(confidence>=.70)phrase='احتمال كسر بالبيضة 🟠';
-  else phrase='اشتباه شق — يحتاج تدقيق 👀';
-  return position+' · '+phrase;
+  const phrases=[
+   'أني هنااا مكسورة 😭',
+   'يمعود شوفوني.. مشروخة 😂',
+   'لا تمرروني ترى مكسورة 🥚',
+   'تره بيّه شگ.. ديروا بالكم 👀',
+   'خالي هاي مو سليمة أبد 😅',
+   'آني انكسرت.. الحقوني 😂',
+   'لا تضغط عليّ يمعود 😭',
+   'هاي البيضة تريد إنقاذ!',
+   'شوفوا الشق مالتي واضح 😂',
+   'يمعود لا تحسبني سليمة!'
+  ];
+  const index=Math.abs(Number(p.id)||0)%phrases.length;
+  return position+' · '+phrases[index];
  }
  // كل عبارة ترتبط بصندوقها، ونختار أقرب موضع خالٍ لتجنب تداخل العبارات
  for(const p of current){
