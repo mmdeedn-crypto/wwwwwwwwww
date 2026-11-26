@@ -378,8 +378,9 @@ async function analyzeFrame(){
   const form=new FormData();form.append('file',blob,'frame.jpg');
   const res=await fetch(url,{method:'POST',body:form});
   if(!res.ok){let m='HTTP '+res.status;try{const q=await res.json();m=q.message||q.error||m}catch(e){}throw Error(m)}
-  const out=await res.json(),raw=Array.isArray(out.predictions)?out.predictions:[];hasRealScan=true;
+  const out=await res.json(),raw=Array.isArray(out.predictions)?out.predictions:[];
   const p=raw.filter(q=>Number(q.confidence)>=.55&&q.width>0&&q.height>0&&(q.width*q.height)/(w*h)<.22&&q.width/w<.75&&q.height/h<.75);
+  if(p.length)hasRealScan=true;
   updateTracks(p,capturedTime,V.videoWidth/w,V.videoHeight/h);
   notice(p.length?'رصد النموذج '+p.length+' احتمال شق بعد استبعاد المربعات الكبيرة المشبوهة.':'ماكو شق مؤكد بهاللقطة؛ هذا مو دليل أن كل البيض سليم.');
   status('آخر فحص '+fmt(capturedTime)+' · '+p.length+' رصد مقبول','st-run');
@@ -535,8 +536,9 @@ analyzeFrame=async function(){
    const form=new FormData();form.append('file',blob,'frame.jpg');
    const res=await fetch(url,{method:'POST',body:form});
    if(!res.ok){let m='HTTP '+res.status;try{const q=await res.json();m=q.message||q.error||m}catch(e){}throw Error(m)}
-   const out=await res.json(),raw=Array.isArray(out.predictions)?out.predictions:[];hasRealScan=true;
+   const out=await res.json(),raw=Array.isArray(out.predictions)?out.predictions:[];
    const p=raw.filter(q=>Number(q.confidence)>=.55&&q.width>0&&q.height>0&&(q.width*q.height)/(w*h)<.22&&q.width/w<.75&&q.height/h<.75);
+   if(p.length)hasRealScan=true;
    /* تحديث الواجهة بعد انتهاء مهمة الشبكة، في إطار رسم منفصل */
    requestAnimationFrame(()=>{
      updateTracks(p,capturedTime,V.videoWidth/w,V.videoHeight/h);
