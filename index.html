@@ -366,6 +366,8 @@ async function analyzeFrame(){
  if(!apiKey||busy||V.paused||V.ended||V.readyState<2||!V.videoWidth)return;
  busy=true;lastScan=performance.now();
  try{
+  // ثبّت توقيت اللقطة قبل إرسالها؛ لا تستخدم وقت الفيديو بعد انتهاء طلب الشبكة.
+  const capturedTime=V.currentTime;
   const w=Math.min(192,V.videoWidth),h=Math.max(1,Math.round(w*V.videoHeight/V.videoWidth));
   capCanvas.width=w;capCanvas.height=h;cap.drawImage(V,0,0,w,h);
   const blob=await new Promise(resolve=>capCanvas.toBlob(resolve,'image/jpeg',.32));
@@ -376,9 +378,9 @@ async function analyzeFrame(){
   if(!res.ok){let m='HTTP '+res.status;try{const q=await res.json();m=q.message||q.error||m}catch(e){}throw Error(m)}
   const out=await res.json(),raw=Array.isArray(out.predictions)?out.predictions:[];
   const p=raw.filter(q=>Number(q.confidence)>=.55&&q.width>0&&q.height>0&&(q.width*q.height)/(w*h)<.22&&q.width/w<.75&&q.height/h<.75);
-  updateTracks(p,V.currentTime,V.videoWidth/w,V.videoHeight/h);
+  updateTracks(p,capturedTime,V.videoWidth/w,V.videoHeight/h);
   notice(p.length?'رصد النموذج '+p.length+' احتمال شق بعد استبعاد المربعات الكبيرة المشبوهة.':'ماكو شق مؤكد بهاللقطة؛ هذا مو دليل أن كل البيض سليم.');
-  status('آخر فحص '+fmt(V.currentTime)+' · '+p.length+' رصد مقبول','st-run');
+  status('آخر فحص '+fmt(capturedTime)+' · '+p.length+' رصد مقبول','st-run');
  }catch(e){status('فشل فحص Roboflow','st-err');notice('تعذّر الفحص: '+(e.message||'تحقق من المفتاح والإنترنت')+' — الفيديو يستمر بالتشغيل.')}
  finally{busy=false}
 }
