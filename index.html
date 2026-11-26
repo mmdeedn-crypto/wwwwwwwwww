@@ -404,10 +404,21 @@ function draw(){
   X.fillStyle='#fff';X.textAlign='center';X.textBaseline='middle';X.fillText(label,tx+tw/2,ty+10,tw-10);X.restore();
   placed.push(box);
  }
- const funnyCracks=['يمعود آني هنا مكسورة 😂','لا تدوسون عليّ ترى مشروخة 😅','يمّه انكشف أمري!','هاي مو خدشة.. هاي كسرة 😂','طلعوني من خط الإنتاج!','تره تعبانة هاي القشرة 😭','لا تخلّوني ويا السليمات 😂'];
+ // اختيار العبارة حسب موضع البيضة وثقة النموذج في هذه اللقطة، لا حسب رقم البيضة.
+ function phraseForCrack(p){
+  const centerX=p.box[0]+p.box[2]/2,videoW=V.videoWidth||1;
+  const ratio=centerX/videoW;
+  const position=ratio<.34?'يسار الخط':ratio>.66?'يمين الخط':'وسط الخط';
+  const confidence=Number(p.confidence)||0;
+  let phrase;
+  if(confidence>=.85)phrase='هاي كسرتي واضحة.. لا تمرروني 😂';
+  else if(confidence>=.70)phrase='دققوا عليّ.. شكلي مشروخة 😅';
+  else phrase='يمكن بيّه شق.. أحتاج فحص 👀';
+  return position+' · '+phrase;
+ }
  // كل عبارة ترتبط بصندوقها، ونختار أقرب موضع خالٍ لتجنب تداخل العبارات
  for(const p of current){
-  const [x,y,bw,bh]=p.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label=funnyCracks[(p.id-1)%funnyCracks.length];
+  const [x,y,bw,bh]=p.box,px=ox+x*sc,py=oy+y*sc,ww=bw*sc,hh=bh*sc,label=phraseForCrack(p);
   X.save();X.font='700 11px Cairo,sans-serif';X.direction='rtl';
   const tw=Math.min(Math.max(112,X.measureText(label).width+18),Math.max(112,w-8)),th=25;
   const cx=px+ww/2,cy=py+hh/2,gap=8;
