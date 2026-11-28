@@ -33,7 +33,17 @@ nav .priv{margin-top:8px;font-size:12px;color:var(--mut);border-top:1px solid va
 main{display:flex;flex-direction:column;gap:14px;min-width:0}
 .stage-col{min-height:0;position:relative}
 .win{position:relative;display:flex;flex-direction:column;width:100%;height:auto;min-width:300px;min-height:0;max-width:100%;overflow:hidden;resize:both;border:1px solid var(--cyan);border-radius:14px;background:var(--navy);box-shadow:0 0 28px #22d3ee22;z-index:3}
-.win:fullscreen{resize:none;border-radius:0;height:100%;overflow:auto}.win:fullscreen .stage{max-height:calc(100vh - 112px);flex:0 0 auto}
+.win:fullscreen,.win:-webkit-full-screen{
+  width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;
+  min-width:0!important;min-height:0!important;display:flex!important;flex-direction:column!important;
+  overflow:hidden!important;border:0!important;border-radius:0!important;resize:none!important;
+}
+.win:fullscreen .stage,.win:-webkit-full-screen .stage{
+  flex:1 1 auto!important;min-height:0!important;max-height:none!important;
+  height:auto!important;aspect-ratio:auto!important;width:100%!important;
+}
+.win:fullscreen .ctl,.win:-webkit-full-screen .ctl{flex:0 0 auto}
+.win:fullscreen .stage video,.win:-webkit-full-screen .stage video{object-fit:contain}
 .wh{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:grab;touch-action:none;user-select:none;background:#1e366a;border-bottom:1px solid var(--line)}
 .wh span{flex:1;font-weight:800}
 .wh .hint{font-weight:400;font-size:12px;color:var(--mut);flex:none}
@@ -176,8 +186,7 @@ dialog select{background:#f0f7ff;color:#244563;border-color:#c9def2}
       <input type="range" id="seek" min="0" max="1000" value="0" aria-label="شريط التقدم">
       <select id="spd" aria-label="سرعة التشغيل"><option value=".5">0.5x</option><option value="1" selected>1.0x</option><option value="1.5">1.5x</option><option value="2">2x</option></select>
       <label class="muted"><input type="checkbox" id="tTrail" checked> المسارات</label><label class="muted"><input type="checkbox" id="tHeat"> خريطة الحرارة</label>
-    </div>
-    <div class="muted" style="padding:8px 12px;background:var(--navy);border-top:1px solid var(--line);font-size:12px">🔴 شق محتمل = رصد بواسطة نموذج كشف الشقوق. عدم ظهور مربع لا يعني أن البيضة سليمة.</div>
+    </div>    <div class="muted" style="padding:8px 12px;background:var(--navy);border-top:1px solid var(--line);font-size:12px">🔴 شق محتمل = رصد بواسطة نموذج كشف الشقوق. عدم ظهور مربع لا يعني أن البيضة سليمة.</div>
   </section>
   </div>
   <section class="panel egg-reference" id="eggReference">
@@ -356,8 +365,7 @@ function buildTrayGroups(items){
 function updateTracks(preds,t,sx,sy){
  lastDetectionVideoTime=t;
  const used=new Set(),fresh=[];
- for(const p of preds){const box=[(p.x-p.width/2)*sx,(p.y-p.height/2)*sy,p.width*sx,p.height*sy];let best=null,bi=.12;
-  for(const k of tracks){if(used.has(k))continue;const v=iou(k.box,box);if(v>bi){bi=v;best=k}}
+ for(const p of preds){const box=[(p.x-p.width/2)*sx,(p.y-p.height/2)*sy,p.width*sx,p.height*sy];let best=null,bi=.12;  for(const k of tracks){if(used.has(k))continue;const v=iou(k.box,box);if(v>bi){bi=v;best=k}}
   if(!best){best={id:nextId++,first:t,last:t,hits:0,box,cls:p.class||'بيض متشقق',confidence:p.confidence||0};tracks.push(best);addEvent(t,best)}
   used.add(best);Object.assign(best,{box,last:t,hits:best.hits+1,confidence:Math.max(best.confidence,p.confidence||0),cls:p.class||best.cls});fresh.push({...best,box});
  }
@@ -517,39 +525,3 @@ draw=function(){
     if(sig===lastSig)return;lastSig=sig;origDraw(true);
   });
 };
-
-/* 3) تغيّر الحجم: تجاهل تغيّر الارتفاع فقط (شريط عنوان الهاتف) وتأجيل الحساب للإطار التالي */
-{const f0=fitVideoFrame;let w0=innerWidth,tk=0;removeEventListener('resize',f0);
- addEventListener('resize',()=>{if(innerWidth===w0||tk)return;tk=requestAnimationFrame(()=>{tk=0;w0=innerWidth;f0()})})}
-
-/* 4) التقاط اللقطة على canvas برمجي (CPU) لتفادي توقّف GPU عند قراءة الصورة */
-const cc=document.createElement('canvas'),cx=cc.getContext('2d',{willReadFrequently:true});
-analyzeFrame=async function(){
- if(!apiKey||busy||V.paused||V.ended||V.readyState<2||!V.videoWidth)return;
- busy=true;lastScan=performance.now();
- try{
-   const capturedTime=V.currentTime,w=Math.min(128,V.videoWidth),h=Math.max(1,Math.round(w*V.videoHeight/V.videoWidth));
-   cc.width=w;cc.height=h;cx.drawImage(V,0,0,w,h);
-   const blob=await new Promise(r=>cc.toBlob(r,'image/jpeg',.20));
-   if(!blob)throw Error('تعذّر تجهيز صورة الفحص');
-   const url='https://detect.roboflow.com/'+MODEL+'?api_key='+encodeURIComponent(apiKey)+'&confidence='+Math.max(55,S.confidence)+'&overlap=25';
-   const form=new FormData();form.append('file',blob,'frame.jpg');
-   const res=await fetch(url,{method:'POST',body:form});
-   if(!res.ok){let m='HTTP '+res.status;try{const q=await res.json();m=q.message||q.error||m}catch(e){}throw Error(m)}
-   const out=await res.json(),raw=Array.isArray(out.predictions)?out.predictions:[];
-   const p=raw.filter(q=>Number(q.confidence)>=.55&&q.width>0&&q.height>0&&(q.width*q.height)/(w*h)<.22&&q.width/w<.75&&q.height/h<.75);
-   if(p.length)hasRealScan=true;
-   /* تحديث الواجهة بعد انتهاء مهمة الشبكة، في إطار رسم منفصل */
-   requestAnimationFrame(()=>{
-     updateTracks(p,capturedTime,V.videoWidth/w,V.videoHeight/h);
-     notice(p.length?'رصد النموذج '+p.length+' احتمال شق بعد استبعاد المربعات الكبيرة المشبوهة.':'ماكو شق مؤكد بهاللقطة؛ هذا مو دليل أن كل البيض سليم.');
-     status('آخر فحص '+fmt(capturedTime)+' · '+p.length+' رصد مقبول','st-run');
-   });
- }catch(e){status('فشل فحص Roboflow','st-err');notice('تعذّر فحص البيض. تأكد من مفتاح Roboflow والإنترنت؛ الفيديو يستمر بالتشغيل.')}
- finally{busy=false}
-};
-}catch(e){console.warn('lag-fix.js لم يُطبَّق:',e)}})();
-
-</script>
-</body>
-</html>
